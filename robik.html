@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Робот Робик — Станция в опасности</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    background: #17213b;
+  }
+  .screen {
+    width: min(920px, 94vw);
+    min-height: 620px;
+    position: relative;
+    overflow: hidden;
+    border: 10px solid #28375d;
+    border-radius: 34px;
+    background: radial-gradient(circle at 50% 35%, #324875 0, #18233f 55%, #10172d 100%);
+    box-shadow: 0 20px 70px #0008, inset 0 0 0 4px #6f83b8;
+    color: white;
+    text-align: center;
+    padding: 30px 25px;
+  }
+  .stars { position:absolute; inset:0; pointer-events:none; opacity:.75; }
+  .stars i {
+    position:absolute; width:6px; height:6px; background:#fff; border-radius:50%;
+    animation: twinkle 1.6s infinite alternate;
+  }
+  @keyframes twinkle { to { opacity:.2; transform:scale(.6); } }
+
+  h1 { margin: 0 0 8px; font-size: clamp(28px,5vw,48px); }
+  .sub { color:#cbd8ff; font-size:18px; margin-bottom:22px; }
+
+  .danger {
+    min-height: 175px;
+    display:grid;
+    place-items:center;
+    position:relative;
+  }
+  .buttons { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; }
+  .red {
+    width:145px; height:72px; border:0; border-radius:20px;
+    background:linear-gradient(#ff6666,#d81731);
+    color:#fff; font-size:22px; font-weight:900;
+    box-shadow:0 8px 0 #8b1022, 0 0 25px #ff334c88;
+    animation: pulse .55s infinite alternate;
+  }
+  @keyframes pulse { to { transform:scale(1.07); box-shadow:0 8px 0 #8b1022,0 0 40px #ff334c; } }
+
+  .message {
+    font-size: clamp(24px,4vw,39px);
+    font-weight:900;
+    line-height:1.18;
+    min-height: 100px;
+    display:grid;
+    place-items:center;
+    text-shadow: 0 3px 12px #000;
+  }
+  .letter {
+    font-size: clamp(110px,23vw,210px);
+    font-weight:1000;
+    color:#9eeeff;
+    line-height:.8;
+    text-shadow:0 0 20px #6ee8ff, 0 0 55px #61dfff;
+    animation: blink .45s infinite alternate;
+  }
+  @keyframes blink { from{opacity:.2;transform:scale(.94)} to{opacity:1;transform:scale(1.06)} }
+
+  .start {
+    margin-top:15px;
+    border:0; border-radius:18px; padding:15px 28px;
+    font-size:21px; font-weight:900; color:#13203a;
+    background:#ffe66d; box-shadow:0 7px 0 #c6a928;
+    cursor:pointer;
+  }
+  .start:active { transform:translateY(5px); box-shadow:0 2px 0 #c6a928; }
+  .counter { margin-top:16px; color:#b8c8ee; font-size:16px; }
+  .robot {
+    position:absolute; right:24px; bottom:18px; font-size:64px;
+    filter:drop-shadow(0 4px 5px #0008); animation: float 1.8s ease-in-out infinite alternate;
+  }
+  @keyframes float { to { transform:translateY(-8px) rotate(2deg); } }
+
+  .help { display:none; margin-top:10px; font-size:clamp(25px,4vw,42px); font-weight:1000; color:#ffe66d; animation: pop .6s ease-out; }
+  @keyframes pop { from{transform:scale(.4);opacity:0} to{transform:scale(1);opacity:1} }
+
+  @media(max-width:600px){
+    .screen{min-height:590px}
+    .red{width:120px;height:62px}
+  }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="stars" id="stars"></div>
+  <h1>🤖 Станция Робика 🚨</h1>
+  <div class="sub">Аварийная тревога!</div>
+
+  <div class="danger">
+    <div class="buttons" id="buttons" style="display:none">
+      <button class="red">ТРЕВОГА</button>
+      <button class="red">БИП!</button>
+      <button class="red">ТРЕВОГА</button>
+    </div>
+    <div class="letter" id="letter" style="display:none">Р</div>
+  </div>
+
+  <div class="message" id="message">Нажми «Запустить», чтобы помочь Робика.</div>
+  <button class="start" id="start">▶ Запустить тревогу</button>
+  <div class="counter" id="counter">Готово к 3 повторам</div>
+  <div class="help" id="help">🤖 Робот Робик просит вас о помощи!</div>
+  <div class="robot">🤖</div>
+</div>
+
+<script>
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const msg = document.getElementById('message');
+const buttons = document.getElementById('buttons');
+const letter = document.getElementById('letter');
+const counter = document.getElementById('counter');
+const start = document.getElementById('start');
+const help = document.getElementById('help');
+
+for(let i=0;i<35;i++){
+  const s=document.createElement('i');
+  s.style.left=Math.random()*100+'%';
+  s.style.top=Math.random()*100+'%';
+  s.style.animationDelay=Math.random()*1.6+'s';
+  document.getElementById('stars').appendChild(s);
+}
+
+let audioCtx;
+function beep(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+  o.type='square'; o.frequency.value=880;
+  g.gain.setValueAtTime(.0001,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.18,audioCtx.currentTime+.015);
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.18);
+  o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+.2);
+}
+function speak(text){
+  return new Promise(resolve=>{
+    if(!('speechSynthesis' in window)){ resolve(); return; }
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='ru-RU'; u.rate=.78; u.pitch=.55; u.volume=1;
+    u.onend=resolve; u.onerror=resolve;
+    speechSynthesis.speak(u);
+  });
+}
+async function run(){
+  start.disabled=true; start.style.opacity=.6; help.style.display='none';
+  for(let round=1; round<=3; round++){
+    counter.textContent=`Тревога ${round} из 3`;
+    msg.textContent='🚨 СТАНЦИЯ В ОПАСНОСТИ! 🚨';
+    buttons.style.display='flex'; letter.style.display='none';
+    await sleep(350);
+    beep(); await sleep(210); beep(); await sleep(210); beep();
+    await speak('Станция в опасности. Робот Робик потерял звук.');
+    buttons.style.display='none';
+    msg.textContent='Робик пытается подать сигнал…';
+    await sleep(450);
+    msg.textContent='';
+    letter.style.display='block';
+    await sleep(1200);
+    letter.style.display='none';
+  }
+  msg.textContent='Сигнал тревоги завершён!';
+  counter.textContent='Все 3 повтора выполнены';
+  help.style.display='block';
+  await speak('Робот Робик просит вас о помощи.');
+  start.disabled=false; start.style.opacity=1;
+}
+start.addEventListener('click', run);
+</script>
+</body>
+</html>
