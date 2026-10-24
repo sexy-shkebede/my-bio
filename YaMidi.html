@@ -1,0 +1,1200 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Редактор дисплея Станции</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#e8ebf0; --card:#ffffff; --card-2:#f2f4f7; --line:#d5d9e1; --text:#14161b; --text-2:#596071;
+  --chip:#e2e6ed; --chip-hover:#d7dce5; --accent:#f3c64f; --accent-ink:#2a1f03; --accent-text:#8a5e00;
+  --danger:#c0392b; --warn:#b7791f; --focus:#2f6fde;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#121419; --card:#1a1d24; --card-2:#22262e; --line:#2c303a; --text:#e8eaef; --text-2:#9aa1ae;
+    --chip:#272b34; --chip-hover:#30353f; --accent-text:#f3c64f; --danger:#ff7b6c; --warn:#f0b54a; --focus:#8fb4ff;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#121419; --card:#1a1d24; --card-2:#22262e; --line:#2c303a; --text:#e8eaef; --text-2:#9aa1ae;
+  --chip:#272b34; --chip-hover:#30353f; --accent-text:#f3c64f; --danger:#ff7b6c; --warn:#f0b54a; --focus:#8fb4ff;
+}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Onest,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.app{max-width:1260px;margin:0 auto;padding:16px 12px 88px;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:1060px){
+  .app{grid-template-columns:minmax(0,1fr) 390px;align-items:start;padding:24px 24px 64px;gap:18px}
+  .side{position:sticky;top:18px}
+}
+.top{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.top h1{font:600 19px/1.15 Unbounded,Onest,system-ui,sans-serif;letter-spacing:-.01em;margin:0}
+.top .fname{color:var(--text-2);font-size:13px;margin-top:3px;word-break:break-all}
+.main,.side{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;min-width:0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border:0;border-radius:20px;background:var(--chip);font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;transition:border-radius .18s ease,background-color .15s}
+.btn:hover{background:var(--chip-hover)}
+.btn:active{border-radius:12px}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{background:#f7d067}
+.btn svg{width:20px;height:20px;fill:currentColor;flex:none}
+.btn:disabled{opacity:.45;cursor:default}
+.ibtn{width:44px;height:44px;padding:0;border-radius:14px}
+.ibtn:active{border-radius:22px}
+.ibtn.on{background:var(--accent);color:var(--accent-ink)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+
+/* device */
+.device-wrap{background:#15171c;border:1px solid #262a32;border-radius:28px;padding:10px}
+.device{background:#0b0c0f;border:1px solid #2a2e38;border-radius:18px;padding:4px 2px}
+.disp{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.disp .vis{stroke-width:1.6;stroke-linejoin:round}
+.disp circle.vis{stroke-width:2.4}
+.disp .hit{fill:transparent;stroke:transparent;stroke-width:14;stroke-linejoin:round;pointer-events:all}
+.disp circle.hit{stroke-width:0}
+.disp [data-el]{cursor:pointer}
+.disp .lbl{font:500 19px Onest,system-ui,sans-serif;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.disp .tile{cursor:pointer}
+.disp .tile rect{fill:#262a34;transition:fill .12s}
+.disp .tile:hover rect{fill:#2f3441}
+.disp .tile:active rect{fill:#3a404e}
+.disp .tile path{fill:#e8ecf5;stroke:#e8ecf5;stroke-width:3;stroke-linejoin:round}
+.disp .tile:focus-visible{outline:none}
+.disp .tile:focus-visible rect{stroke:#8fb4ff;stroke-width:3}
+.disp g.hl .vis{stroke:#7fb2ff;stroke-width:4}
+.hint{color:var(--text-2);font-size:13px;margin:0}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:14px 16px}
+.card h2{font-size:15px;font-weight:600;margin:0}
+.brush{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px 12px}
+.brush label{font-weight:600;font-size:14px}
+.brush input[type=range]{width:100%;accent-color:var(--accent)}
+.brush output{font-variant-numeric:tabular-nums;min-width:3ch;text-align:right;font-weight:600}
+.swatch{width:18px;height:18px;border-radius:50%;display:inline-block;vertical-align:-3px;margin-right:6px;border:1.5px solid #e2b13c}
+.chips{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.chip{height:34px;padding:0 14px;border-radius:17px;border:1px solid var(--line);background:transparent;font-size:13px;font-weight:600;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tools-row{display:flex;flex-wrap:wrap;gap:8px}
+.sep{flex:1}
+
+/* timeline */
+.tl-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.tl-head .meta{color:var(--text-2);font-size:13px;font-variant-numeric:tabular-nums}
+.strip{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
+.thumb{flex:0 0 auto;width:108px;border:2px solid #23262e;background:#0b0c0f;border-radius:14px;padding:6px 6px 4px;cursor:pointer;scroll-snap-align:start;text-align:left}
+.thumb svg{display:block;width:100%;height:auto}
+.thumb .cap{display:flex;justify-content:space-between;gap:4px;font-size:11px;margin-top:4px;color:#8f95a2;font-variant-numeric:tabular-nums}
+.thumb .cap b{color:#d9dce3;font-weight:600}
+.thumb .cap i{font-style:normal;color:#f3c64f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thumb.cur{border-color:#f3c64f}
+.thumb.playing{border-color:#7fb2ff}
+.tl-ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px}
+@media (max-width:420px){.ibtn{width:40px;height:40px}}
+.dur{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dur input[type=number]{width:96px}
+
+/* fields */
+.field{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.field>span{font-size:13px;color:var(--text-2)}
+input[type=text],input[type=number],select,textarea{height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card-2);padding:0 12px;width:100%;min-width:0}
+textarea{height:auto;padding:10px 12px;resize:vertical;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;word-break:break-all}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:end}
+.grid2 .btn{width:100%}
+.check{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent);margin:0}
+
+/* accordions */
+details.tool{background:var(--card);border:1px solid var(--line);border-radius:22px}
+details.tool>summary{list-style:none;cursor:pointer;padding:15px 18px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:22px}
+details.tool>summary::-webkit-details-marker{display:none}
+details.tool>summary::after{content:"";width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translate(-2px,-2px);opacity:.55;transition:transform .2s ease;flex:none}
+details.tool[open]>summary::after{transform:rotate(-135deg) translate(-2px,-2px)}
+details.tool>summary small{font-weight:400;color:var(--text-2);font-size:13px;margin-left:auto}
+.tool-body{padding:0 18px 18px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.tool-body p{margin:0;font-size:14px;color:var(--text-2)}
+.tool-body p b{color:var(--text);font-weight:600}
+
+/* byte map */
+.mgroup{border:0;margin:0;padding:0;display:grid;gap:6px}
+.mgroup legend{font-size:13px;font-weight:600;padding:0;margin-bottom:6px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+.mcell{display:grid;gap:3px;font-size:12px;color:var(--text-2);text-align:center}
+.mcell input[type=number]{height:36px;text-align:center;padding:0 2px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;appearance:textfield}
+.mcell input::-webkit-inner-spin-button,.mcell input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.mcell input.dup{border-color:var(--warn);color:var(--warn)}
+.mcell input.bad{border-color:var(--danger);color:var(--danger)}
+.mapwarn{font-size:13px;color:var(--warn);margin:0}
+
+/* hex */
+.hexgrid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;font:12px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.hx{display:grid;gap:3px;justify-items:center;padding:6px 0 7px;border-radius:9px;border:1px solid var(--line);background:var(--card-2);cursor:pointer;font:inherit}
+.hx small{font-size:9.5px;color:var(--text-2)}
+.hx.on{background:#3a3220;border-color:#6b5a2a;color:#fff3c4}
+.hx.free{border-style:dashed}
+.hx.warn{border:1.5px solid var(--warn);border-style:solid}
+.hx.ro{cursor:default;opacity:.7}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--text-2)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);background:#2b2f39;color:#f1f2f5;padding:12px 18px;border-radius:16px;width:max-content;max-width:min(92vw,560px);font-size:14px;box-shadow:0 8px 28px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:20}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <h1>Дисплей Станции</h1>
+      <div class="fname" id="fnameTop">animation.binscled.zst</div>
+    </div>
+    <button class="btn primary" id="btnDownload" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
+      Скачать
+    </button>
+  </header>
+
+  <main class="main">
+    <section class="device-wrap" aria-label="Дисплей">
+      <div class="device" id="device"></div>
+    </section>
+
+    <section class="card" aria-label="Кисть">
+      <div class="brush">
+        <label for="brush"><span class="swatch" id="swatch"></span>Яркость</label>
+        <input type="range" id="brush" min="0" max="255" step="1" value="255">
+        <output id="brushOut" for="brush">255</output>
+        <div class="chips" id="brushChips">
+          <button class="chip" type="button" data-b="0">Ластик</button>
+          <button class="chip" type="button" data-b="32">12%</button>
+          <button class="chip" type="button" data-b="128">50%</button>
+          <button class="chip" type="button" data-b="255">100%</button>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:10px">Нажми на сегмент, точку или полоску, чтобы зажечь её текущей яркостью. Повторное нажатие гасит. Можно вести пальцем по нескольким. Стрелки листают символы в цифре.</p>
+      <div class="tools-row" style="margin-top:12px">
+        <button class="btn" type="button" id="btnClear">Очистить</button>
+        <button class="btn" type="button" id="btnFill">Зажечь всё</button>
+        <button class="btn" type="button" id="btnInvert">Инвертировать</button>
+        <span class="sep"></span>
+        <button class="btn ibtn" type="button" id="btnUndo" aria-label="Отменить" title="Отменить (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
+        <button class="btn ibtn" type="button" id="btnRedo" aria-label="Вернуть" title="Вернуть (Ctrl+Shift+Z)"><svg viewBox="0 0 24 24"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg></button>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Кадры">
+      <div class="tl-head">
+        <h2>Кадры</h2>
+        <span class="meta" id="tlMeta"></span>
+      </div>
+      <div class="strip" id="strip" role="listbox" aria-label="Список кадров"></div>
+      <div class="tl-ctrl">
+        <button class="btn ibtn" type="button" id="btnPlay" aria-label="Воспроизвести" title="Воспроизвести (пробел)"><svg viewBox="0 0 24 24"><path id="playIcon" d="M8 5v14l11-7z"/></svg></button>
+        <button class="btn ibtn on" type="button" id="btnLoop" aria-pressed="true" aria-label="Повтор" title="Повтор"><svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></button>
+        <button class="btn ibtn" type="button" id="btnAdd" aria-label="Новый пустой кадр" title="Новый пустой кадр"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
+        <button class="btn ibtn" type="button" id="btnDup" aria-label="Дублировать кадр" title="Дублировать кадр"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
+        <button class="btn ibtn" type="button" id="btnDel" aria-label="Удалить кадр" title="Удалить кадр"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+        <button class="btn ibtn" type="button" id="btnLeft" aria-label="Сдвинуть кадр влево" title="Сдвинуть влево"><svg viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+        <button class="btn ibtn" type="button" id="btnRight" aria-label="Сдвинуть кадр вправо" title="Сдвинуть вправо"><svg viewBox="0 0 24 24"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+      </div>
+      <div class="dur" style="margin-top:12px">
+        <label for="durIn" style="font-size:14px;font-weight:600">Длительность кадра</label>
+        <input type="number" id="durIn" min="1" max="60000" step="1" inputmode="numeric">
+        <span style="color:var(--text-2);font-size:14px">мс</span>
+        <button class="btn" type="button" id="btnDurAll">Ко всем кадрам</button>
+      </div>
+      <p class="hint" style="margin-top:8px">В файле на кадр отводится один байт, поэтому кадры длиннее 255 мс при сохранении делятся на несколько одинаковых.</p>
+    </section>
+  </main>
+
+  <aside class="side">
+    <details class="tool" id="dFile" open>
+      <summary>Файл</summary>
+      <div class="tool-body">
+        <label class="field"><span>Имя анимации</span><input type="text" id="nameIn" autocomplete="off" spellcheck="false"></label>
+        <div class="row">
+          <button class="btn primary" type="button" id="btnDownload2">Скачать .binscled.zst</button>
+          <button class="btn" type="button" id="btnOpen">Открыть файл</button>
+          <input type="file" id="fileIn" class="sr" tabindex="-1">
+        </div>
+        <p id="fileStat"></p>
+        <p>В окне Claude файл скачивается внутри .zip, потому что сам .zst сюда не пускают. Распакуй архив, внутри лежит готовый <b id="zipInner">animation.binscled.zst</b>.</p>
+        <label class="field"><span>Примеры</span>
+          <select id="presetSel">
+            <option value="">Выбери пример…</option>
+            <option value="ringing">Будильник, ringing (оригинал)</option>
+            <option value="update">Установка обновления, update_applying (оригинал)</option>
+            <option value="clock">Часы 08:24 с мигающим двоеточием</option>
+            <option value="wave">Волна по всем сегментам</option>
+            <option value="scan">Сканер байтов для проверки карты</option>
+            <option value="blank">Пустой проект</option>
+          </select>
+        </label>
+        <div class="row">
+          <button class="btn" type="button" id="btnB64">Показать как base64</button>
+        </div>
+        <div id="b64Box" hidden class="field">
+          <span>Команда для adb shell: собирает тот же файл из текста</span>
+          <textarea id="b64Out" rows="5" readonly></textarea>
+          <div class="row"><button class="btn" type="button" id="btnCopy">Скопировать</button></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="tool" id="dText">
+      <summary>Текст и бегущая строка</summary>
+      <div class="tool-body">
+        <p>Четыре символа на цифры. Если третий символ <b>:</b>, <b>-</b>, <b>=</b>, <b>.</b> или пробел, он уходит в центральную колонку: например, «08:24» или «12-30».</p>
+        <div class="grid2">
+          <label class="field"><span>Текст</span><input type="text" id="txtIn" value="08:24" maxlength="8" autocomplete="off" spellcheck="false"></label>
+          <button class="btn" type="button" id="btnText">Написать в кадр</button>
+        </div>
+        <label class="field"><span>Бегущая строка</span><input type="text" id="mqIn" value="ПРИВЕТ 2026" autocomplete="off" spellcheck="false"></label>
+        <div class="grid2">
+          <label class="field"><span>Шаг, мс</span><input type="number" id="mqStep" value="220" min="1" max="60000" inputmode="numeric"></label>
+          <button class="btn" type="button" id="btnMq">Добавить кадры</button>
+        </div>
+        <label class="check"><input type="checkbox" id="mqReplace"> Заменить все кадры</label>
+      </div>
+    </details>
+
+    <details class="tool" id="dFx">
+      <summary>Переходы</summary>
+      <div class="tool-body">
+        <div class="grid2">
+          <label class="field"><span>Промежуточных кадров</span><input type="number" id="fxN" value="16" min="1" max="200" inputmode="numeric"></label>
+          <label class="field"><span>Кривая</span>
+            <select id="fxCurve"><option value="sine">Плавная</option><option value="linear">Линейная</option></select>
+          </label>
+        </div>
+        <div class="row">
+          <button class="btn" type="button" id="btnTween">Переход к следующему</button>
+          <button class="btn" type="button" id="btnFadeIn">Появление</button>
+          <button class="btn" type="button" id="btnFadeOut">Затухание</button>
+          <button class="btn" type="button" id="btnMerge">Склеить одинаковые</button>
+        </div>
+        <p>Переход вставляет кадры между текущим и следующим. Появление начинается с тёмного экрана перед текущим кадром, затухание гасит его до темноты. «Склеить» объединяет одинаковые соседние кадры и складывает их длительности.</p>
+      </div>
+    </details>
+
+    <details class="tool" id="dMap">
+      <summary>Карта байтов <small id="mapState"></small></summary>
+      <div class="tool-body">
+        <p>Кадр в файле занимает 48 байт: 47 яркостей (0–255) и длительность. Номера ниже говорят, какой байт отвечает за какой элемент. Раскладка цифр выведена из ringing, центр и точка пока догадка. Проверь сканером на станции и поправь, если что-то не сходится.</p>
+        <label class="check"><input type="checkbox" id="flagChk" checked> Байт 0 служебный: 01 в первом кадре, как в оригиналах</label>
+        <div id="mapGrid" style="display:grid;gap:14px"></div>
+        <p class="mapwarn" id="mapWarn" hidden></p>
+        <div class="row">
+          <button class="btn" type="button" id="btnMapReset">Сбросить карту</button>
+        </div>
+        <div class="grid2">
+          <label class="field"><span>Проверить один байт</span><input type="number" id="probeIn" value="46" min="0" max="46" inputmode="numeric"></label>
+          <button class="btn" type="button" id="btnProbe">Вставить кадр</button>
+        </div>
+      </div>
+    </details>
+
+    <details class="tool" id="dHex">
+      <summary>Байты кадра</summary>
+      <div class="tool-body">
+        <div class="hexgrid" id="hex"></div>
+        <div class="legend"><span>Пунктир: байт не назначен</span><span>Рыжая рамка: горит, но не назначен</span></div>
+        <p>Нажатие на байт зажигает или гасит его текущей яркостью, даже если он не привязан к элементу.</p>
+      </div>
+    </details>
+  </aside>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const NSLOT = 47, FRAME = 48;
+const SEGS = ['a','b','c','d','e','f','g'];
+const DIGITS = [{n:1,x:47},{n:2,x:165},{n:4,x:426},{n:5,x:545}];
+const DY = 88, MX = 352.5;
+const SEGP = {
+  a:[[10,0],[103,0],[90,20],[23,20]],
+  b:[[113,7],[113,100],[93,89],[93,20]],
+  c:[[113,107],[113,200],[93,187],[93,118]],
+  d:[[23,187],[90,187],[103,207],[10,207]],
+  e:[[0,107],[20,118],[20,187],[0,200]],
+  f:[[0,7],[20,20],[20,89],[0,100]],
+  g:[[8,103.5],[22,93.5],[91,93.5],[105,103.5],[91,113.5],[22,113.5]]
+};
+
+/* ---------- geometry & elements ---------- */
+const GEO = [];
+for (const d of DIGITS) {
+  for (const s of SEGS) GEO.push({id:`d${d.n}${s}`, t:'p', p:SEGP[s].map(([x,y]) => `${x+d.x},${y+DY}`).join(' ')});
+  const cx = d.x + 56.5;
+  GEO.push({id:`p${d.n}`, t:'c', cx, cy:143, r:20, lbl:`p${d.n}`});
+  GEO.push({id:`q${d.n}`, t:'c', cx, cy:239, r:20, lbl:`q${d.n}`});
+}
+for (const [k, cy] of [['h',98],['m',191],['l',284.5]]) {
+  GEO.push({id:k+'1', t:'p', p:`285,${cy} 296,${cy-11} ${MX-1},${cy-11} ${MX-1},${cy+11} 296,${cy+11}`, lbl:k+'1', lx:322, ly:cy});
+  GEO.push({id:k+'2', t:'p', p:`${MX+1},${cy-11} 409,${cy-11} 420,${cy} 409,${cy+11} ${MX+1},${cy+11}`, lbl:k+'2', lx:383, ly:cy});
+}
+GEO.push({id:'p3', t:'c', cx:MX, cy:143, r:20, lbl:'p3'});
+GEO.push({id:'q3', t:'c', cx:MX, cy:239, r:20, lbl:'q3'});
+GEO.push({id:'dot', t:'c', cx:678, cy:104, r:13.5});
+
+const ELEMS = [];
+for (const d of DIGITS) {
+  for (const s of SEGS) ELEMS.push({id:`d${d.n}${s}`, g:`d${d.n}`, short:s, name:`цифра ${d.n}, сегмент ${s}`});
+  ELEMS.push({id:`p${d.n}`, g:`d${d.n}`, short:`p${d.n}`, name:`цифра ${d.n}, точка p${d.n}`});
+  ELEMS.push({id:`q${d.n}`, g:`d${d.n}`, short:`q${d.n}`, name:`цифра ${d.n}, точка q${d.n}`});
+}
+for (const id of ['h1','h2','m1','m2','l1','l2','p3','q3']) ELEMS.push({id, g:'mid', short:id, name:`центр, ${id}`});
+ELEMS.push({id:'dot', g:'dot', short:'точка', name:'точка справа'});
+const EL = Object.fromEntries(ELEMS.map(e => [e.id, e]));
+const GROUPS = [['d1','Цифра 1'],['d2','Цифра 2'],['mid','Центр (3)'],['d4','Цифра 4'],['d5','Цифра 5'],['dot','Точка']];
+const MID_IDS = ['h1','h2','m1','m2','l1','l2','p3','q3'];
+function defaultMap() { const m = {}; ELEMS.forEach((e, i) => m[e.id] = i + 1); return m; }
+
+/* ---------- glyphs ---------- */
+const GLYPH = {'0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg','5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg',
+  'A':'abcefg','b':'cdefg','C':'adef','c':'deg','d':'bcdeg','E':'adefg','F':'aefg','G':'acdef','H':'bcefg','h':'cefg','I':'ef','i':'c',
+  'J':'bcde','L':'def','l':'ef','n':'ceg','o':'cdeg','O':'abcdef','P':'abefg','q':'abcfg','r':'eg','S':'acdfg','t':'defg','U':'bcdef',
+  'u':'cde','y':'bcdfg','-':'g','_':'d','°':'abfg','=':'dg',' ':'',
+  'А':'abcefg','Б':'acdefg','В':'abcdefg','Г':'aef','Е':'adefg','Ё':'adefg','З':'abcdg','И':'bcdef','Н':'bcefg','О':'abcdef','П':'abcef',
+  'Р':'abefg','С':'adef','Т':'defg','У':'bcdfg','Ч':'bcfg','Ь':'cdefg','Ы':'cdefg','Э':'abcdg','Я':'abcefg','Ц':'bcdef','Ш':'bcdef','Л':'abcef','Д':'abcdeg','К':'bcefg','М':'abcef','Х':'bcefg','Ю':'bcdef','Й':'bcdef','Ж':'bcefg','Ф':'abcdefg'};
+const CYCLE = [' ','0','1','2','3','4','5','6','7','8','9','A','b','C','c','d','E','F','G','H','h','J','L','n','o','P','q','r','t','U','u','y','-','_','°','='];
+function glyphFor(ch) {
+  if (ch in GLYPH) return GLYPH[ch];
+  const u = ch.toUpperCase(), l = ch.toLowerCase();
+  if (u in GLYPH) return GLYPH[u];
+  if (l in GLYPH) return GLYPH[l];
+  return null;
+}
+
+/* ---------- colors ---------- */
+const ON = [255,243,196], ONS = [226,177,60];
+const OFF = [37,42,53], OFFS = [52,58,71], OFFC = [30,34,43], OFFCS = [54,60,73];
+const tOf = v => v <= 0 ? 0 : Math.pow(Math.min(255, v) / 255, 0.55);
+const mix = (a, b, t) => `rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;
+
+/* ---------- state ---------- */
+const STORE = 'binscled-editor-v1';
+const blankB = () => new Array(NSLOT).fill(0);
+const clamp8 = v => Math.max(0, Math.min(255, Math.round(+v || 0)));
+function freshState() { return {name:'animation', frames:[{b:blankB(), d:20}], cur:0, map:defaultMap(), flag:true, brush:255, loop:true}; }
+function sanitizeState(o) {
+  const s = freshState();
+  if (!o || typeof o !== 'object') return s;
+  if (Array.isArray(o.frames) && o.frames.length) {
+    s.frames = o.frames.map(f => ({b: Array.from({length:NSLOT}, (_, i) => clamp8(f && f.b ? f.b[i] : 0)), d: Math.max(1, Math.min(60000, Math.round(+(f && f.d) || 20))), ...(f && f.n ? {n:String(f.n).slice(0,24)} : {})}));
+  }
+  if (o.map && typeof o.map === 'object') for (const e of ELEMS) { const v = o.map[e.id]; if (Number.isInteger(v) && v >= 0 && v < NSLOT) s.map[e.id] = v; }
+  if (typeof o.flag === 'boolean') s.flag = o.flag;
+  if (typeof o.loop === 'boolean') s.loop = o.loop;
+  if (Number.isFinite(o.brush)) s.brush = clamp8(o.brush);
+  if (typeof o.name === 'string' && o.name.trim()) s.name = o.name.slice(0, 64);
+  s.cur = Math.max(0, Math.min(s.frames.length - 1, o.cur | 0));
+  return s;
+}
+let S;
+try { S = sanitizeState(JSON.parse(localStorage.getItem(STORE) || 'null')); } catch (e) { S = freshState(); }
+let saveT = 0;
+function save() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} }, 300); }
+const cur = () => S.frames[S.cur];
+const cloneF = f => ({b: f.b.slice(), d: f.d, ...(f.n ? {n:f.n} : {})});
+
+function valOf(f, id) { const s = S.map[id]; return (s >= 0 && s < NSLOT && !(S.flag && s === 0)) ? (f.b[s] | 0) : 0; }
+function setVal(f, id, v) { const s = S.map[id]; if (s >= 0 && s < NSLOT && !(S.flag && s === 0)) f.b[s] = clamp8(v); }
+const onV = () => S.brush > 0 ? S.brush : 255;
+
+/* ---------- undo ---------- */
+const undoS = [], redoS = [];
+const snap = () => JSON.stringify({frames:S.frames, cur:S.cur});
+function pushUndo() { undoS.push(snap()); if (undoS.length > 120) undoS.shift(); redoS.length = 0; }
+function restore(str) { const o = JSON.parse(str); S.frames = o.frames; S.cur = Math.min(o.cur, S.frames.length - 1); }
+function doUndo() { if (!undoS.length) return; stopPlay(); redoS.push(snap()); restore(undoS.pop()); refresh(true); }
+function doRedo() { if (!redoS.length) return; stopPlay(); undoS.push(snap()); restore(redoS.pop()); refresh(true); }
+
+/* ---------- display ---------- */
+const nodes = {};
+function buildDisplay() {
+  let s = '';
+  for (const d of DIGITS) {
+    const cx = d.x + 56.5;
+    s += `<g class="tile" data-arrow="${d.n}:1" role="button" tabindex="0" aria-label="Цифра ${d.n}: следующий символ"><rect x="${cx-31}" y="12" width="62" height="56" rx="13"/><path d="M${cx-9} 47L${cx+9} 47L${cx} 32Z"/></g>`;
+    s += `<g class="tile" data-arrow="${d.n}:-1" role="button" tabindex="0" aria-label="Цифра ${d.n}: предыдущий символ"><rect x="${cx-31}" y="314" width="62" height="56" rx="13"/><path d="M${cx-9} 335L${cx+9} 335L${cx} 350Z"/></g>`;
+  }
+  for (const e of GEO) {
+    const lbl = e.lbl ? `<text class="lbl" x="${e.t === 'c' ? e.cx : e.lx}" y="${e.t === 'c' ? e.cy : e.ly}">${e.lbl}</text>` : '';
+    if (e.t === 'p') s += `<g data-el="${e.id}"><title></title><polygon class="vis" points="${e.p}"/>${lbl}<polygon class="hit" points="${e.p}"/></g>`;
+    else s += `<g data-el="${e.id}"><title></title><circle class="vis" cx="${e.cx}" cy="${e.cy}" r="${e.r}"/>${lbl}<circle class="hit" cx="${e.cx}" cy="${e.cy}" r="${e.r + 8}"/></g>`;
+  }
+  $('#device').innerHTML = `<svg class="disp" id="disp" viewBox="37 2 666 378" role="group" aria-label="Семисегментный дисплей: 4 цифры, центральная колонка, точки">${s}</svg>`;
+  for (const e of GEO) {
+    const g = $(`[data-el="${e.id}"]`);
+    nodes[e.id] = {g, vis: g.querySelector('.vis'), lbl: g.querySelector('.lbl'), title: g.querySelector('title'), c: e.t === 'c'};
+  }
+}
+function renderDisplay(f = cur()) {
+  for (const e of GEO) {
+    const n = nodes[e.id], v = valOf(f, e.id), t = tOf(v);
+    n.vis.setAttribute('fill', mix(n.c ? OFFC : OFF, ON, t));
+    n.vis.setAttribute('stroke', mix(n.c ? OFFCS : OFFS, ONS, t));
+    if (n.lbl) n.lbl.setAttribute('fill', t > 0.5 ? '#3a2f12' : '#8b919d');
+  }
+}
+function renderTitles() {
+  for (const e of GEO) {
+    const s = S.map[e.id];
+    nodes[e.id].title.textContent = `${EL[e.id].name[0].toUpperCase() + EL[e.id].name.slice(1)}: байт ${s}`;
+  }
+}
+
+/* ---------- thumbnails ---------- */
+function miniSvg(f) {
+  let s = '<svg viewBox="42 82 656 220" aria-hidden="true">';
+  for (const e of GEO) {
+    const v = valOf(f, e.id), fill = v ? mix(OFF, ON, tOf(v)) : (e.t === 'c' ? '#1b1f27' : '#21252e');
+    s += e.t === 'p' ? `<polygon points="${e.p}" fill="${fill}"/>` : `<circle cx="${e.cx}" cy="${e.cy}" r="${e.r}" fill="${fill}"/>`;
+  }
+  return s + '</svg>';
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function thumbHTML(f, i) {
+  return `<button type="button" class="thumb${i === S.cur ? ' cur' : ''}" data-i="${i}" role="option" aria-selected="${i === S.cur}" aria-label="Кадр ${i+1}, ${f.d} мс">${miniSvg(f)}<span class="cap"><b>${i+1}</b>${f.n ? `<i>${esc(f.n)}</i>` : ''}<span>${f.d}&nbsp;мс</span></span></button>`;
+}
+function renderStrip() {
+  $('#strip').innerHTML = S.frames.map(thumbHTML).join('');
+  scrollToCur();
+}
+function updateThumb(i = S.cur) {
+  const t = $(`.thumb[data-i="${i}"]`);
+  if (t) t.outerHTML = thumbHTML(S.frames[i], i);
+}
+function scrollToCur() {
+  const t = $(`.thumb[data-i="${S.cur}"]`);
+  if (t) { const st = $('#strip'); const l = t.offsetLeft - st.offsetLeft, r = l + t.offsetWidth; if (l < st.scrollLeft) st.scrollLeft = l - 8; else if (r > st.scrollLeft + st.clientWidth) st.scrollLeft = r - st.clientWidth + 8; }
+}
+function selectFrame(i) {
+  stopPlay();
+  i = Math.max(0, Math.min(S.frames.length - 1, i));
+  const prev = $(`.thumb.cur`);
+  if (prev) { prev.classList.remove('cur'); prev.setAttribute('aria-selected', 'false'); }
+  S.cur = i;
+  const t = $(`.thumb[data-i="${i}"]`);
+  if (t) { t.classList.add('cur'); t.setAttribute('aria-selected', 'true'); }
+  scrollToCur(); renderDisplay(); renderMeta(); renderHex(); save();
+}
+
+/* ---------- meta & refresh ---------- */
+const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c); };
+const nf = n => n.toLocaleString('ru-RU');
+function renderMeta() {
+  const n = S.frames.length, total = S.frames.reduce((a, f) => a + f.d, 0);
+  $('#tlMeta').textContent = `${n} ${plural(n, 'кадр', 'кадра', 'кадров')}, ${(total / 1000).toLocaleString('ru-RU', {maximumFractionDigits:2})} с`;
+  if (document.activeElement !== $('#durIn')) $('#durIn').value = cur().d;
+  $('#btnUndo').disabled = !undoS.length; $('#btnRedo').disabled = !redoS.length;
+  $('#btnDel').disabled = n < 2; $('#btnLeft').disabled = S.cur === 0; $('#btnRight').disabled = S.cur === n - 1;
+  const fn = fileBase() + '.binscled.zst';
+  $('#fnameTop').textContent = fn; $('#zipInner').textContent = fn;
+  const raw = buildRaw();
+  $('#fileStat').innerHTML = `На выходе <b>${nf(raw.length / FRAME)}</b> ${plural(raw.length / FRAME, 'кадр', 'кадра', 'кадров')} по 48 байт, файл <b>${nf(raw.length + 6 + 3 * Math.ceil(raw.length / 131072))}</b> байт.`;
+  if (!$('#b64Box').hidden) fillB64();
+}
+function refresh(full) {
+  renderDisplay(); renderMeta(); renderHex();
+  if (full) renderStrip(); else updateThumb();
+  save();
+}
+
+/* ---------- painting ---------- */
+let paint = null;
+function hitId(target) { const g = target && target.closest ? target.closest('[data-el]') : null; return g ? g.dataset.el : null; }
+function applyPaint(id) {
+  if (!paint || paint.done.has(id)) return;
+  paint.done.add(id);
+  if (valOf(cur(), id) !== paint.v) { setVal(cur(), id, paint.v); paint.changed = true; renderDisplay(); renderHex(); }
+}
+function bindDisplay() {
+  const svg = $('#disp');
+  svg.addEventListener('pointerdown', e => {
+    const id = hitId(e.target);
+    if (!id) return;
+    e.preventDefault(); stopPlay();
+    const s = S.map[id];
+    if (S.flag && s === 0) { toast('Этот элемент привязан к служебному байту 0. Поменяй карту байтов.'); return; }
+    pushUndo();
+    const v = valOf(cur(), id);
+    paint = {v: S.brush === 0 ? 0 : (v === S.brush ? 0 : S.brush), done: new Set(), changed: false};
+    applyPaint(id);
+    try { svg.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  svg.addEventListener('pointermove', e => {
+    if (!paint) return;
+    const id = hitId(document.elementFromPoint(e.clientX, e.clientY));
+    if (id) applyPaint(id);
+  });
+  const end = () => { if (!paint) return; if (!paint.changed) undoS.pop(); paint = null; updateThumb(); renderMeta(); save(); };
+  svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end); svg.addEventListener('lostpointercapture', end);
+  svg.addEventListener('click', e => { const t = e.target.closest('[data-arrow]'); if (t) arrow(t.dataset.arrow); });
+  svg.addEventListener('keydown', e => { const t = e.target.closest('[data-arrow]'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); arrow(t.dataset.arrow); } });
+}
+function arrow(spec) {
+  stopPlay();
+  const [n, dir] = spec.split(':').map(Number);
+  const f = cur();
+  const bits = SEGS.filter(s => valOf(f, `d${n}${s}`) > 0).join('');
+  let idx = CYCLE.findIndex(ch => GLYPH[ch] === bits);
+  idx = idx < 0 ? (dir > 0 ? 1 : 10) : (idx + dir + CYCLE.length) % CYCLE.length;
+  const lit = SEGS.map(s => valOf(f, `d${n}${s}`)).filter(v => v > 0);
+  const v = lit.length ? Math.max(...lit) : onV();
+  pushUndo();
+  setDigit(f, n, GLYPH[CYCLE[idx]], v);
+  refresh(false);
+}
+function setDigit(f, n, bits, v) { for (const s of SEGS) setVal(f, `d${n}${s}`, bits.includes(s) ? v : 0); }
+const MIDMAP = {':':['p3','q3'], '.':['q3'], "'":['p3'], '-':['m1','m2'], '=':['h1','h2','l1','l2'], '≡':['h1','h2','m1','m2','l1','l2'], ' ':[]};
+function setMid(f, ch, v) { const on = MIDMAP[ch] || []; for (const id of MID_IDS) setVal(f, id, on.includes(id) ? v : 0); }
+function applyText(f, str, v) {
+  const chars = [...str];
+  let mid = null;
+  if (chars.length >= 5 && chars[2] in MIDMAP) { mid = chars[2]; chars.splice(2, 1); }
+  const four = chars.slice(0, 4); while (four.length < 4) four.push(' ');
+  const bad = [];
+  DIGITS.forEach((d, i) => { const g = glyphFor(four[i]); if (g === null) bad.push(four[i]); setDigit(f, d.n, g || '', v); });
+  if (mid !== null) setMid(f, mid, v);
+  return bad;
+}
+
+/* ---------- frame ops ---------- */
+function insertFrames(at, list) { S.frames.splice(at, 0, ...list); }
+function opClear() { stopPlay(); pushUndo(); cur().b = blankB(); refresh(false); }
+function opFill() { stopPlay(); pushUndo(); for (const e of ELEMS) setVal(cur(), e.id, onV()); refresh(false); }
+function opInvert() { stopPlay(); pushUndo(); const f = cur(); for (const e of ELEMS) setVal(f, e.id, valOf(f, e.id) > 0 ? 0 : onV()); refresh(false); }
+function opAdd() { stopPlay(); pushUndo(); insertFrames(S.cur + 1, [{b:blankB(), d:cur().d}]); S.cur++; refresh(true); }
+function opDup() { stopPlay(); pushUndo(); const c = cloneF(cur()); delete c.n; insertFrames(S.cur + 1, [c]); S.cur++; refresh(true); }
+function opDel() { if (S.frames.length < 2) return; stopPlay(); pushUndo(); S.frames.splice(S.cur, 1); S.cur = Math.min(S.cur, S.frames.length - 1); refresh(true); }
+function opMove(dir) {
+  const j = S.cur + dir; if (j < 0 || j >= S.frames.length) return;
+  stopPlay(); pushUndo(); [S.frames[S.cur], S.frames[j]] = [S.frames[j], S.frames[S.cur]]; S.cur = j; refresh(true);
+}
+const ease = (t, c) => c === 'sine' ? 0.5 - 0.5 * Math.cos(Math.PI * t) : t;
+const lerpB = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+function fxParams() { return {n: Math.max(1, Math.min(200, parseInt($('#fxN').value, 10) || 16)), c: $('#fxCurve').value}; }
+function opTween() {
+  const {n, c} = fxParams();
+  let j = S.cur + 1;
+  if (j >= S.frames.length) { if (S.frames.length < 2) { toast('Нужен хотя бы ещё один кадр, к которому делать переход.'); return; } j = 0; }
+  stopPlay(); pushUndo();
+  const a = cur(), b = S.frames[j], list = [];
+  for (let k = 1; k <= n; k++) list.push({b: lerpB(a.b, b.b, ease(k / (n + 1), c)), d: a.d});
+  insertFrames(S.cur + 1, list);
+  refresh(true); toast(`Добавлено ${n} ${plural(n, 'кадр', 'кадра', 'кадров')} перехода.`);
+}
+function opFade(inward) {
+  const {n, c} = fxParams();
+  stopPlay(); pushUndo();
+  const a = cur(), z = blankB(), list = [];
+  if (inward) { for (let k = 0; k < n; k++) list.push({b: lerpB(z, a.b, ease(k / n, c)), d: a.d}); insertFrames(S.cur, list); S.cur += n; }
+  else { for (let k = 1; k <= n; k++) list.push({b: lerpB(a.b, z, ease(k / n, c)), d: a.d}); insertFrames(S.cur + 1, list); }
+  refresh(true);
+}
+function opMerge() {
+  stopPlay(); pushUndo();
+  const out = [];
+  for (const f of S.frames) {
+    const p = out[out.length - 1];
+    if (p && p.b.every((v, i) => v === f.b[i]) && p.d + f.d <= 60000) { p.d += f.d; }
+    else out.push(cloneF(f));
+  }
+  const removed = S.frames.length - out.length;
+  S.frames = out; S.cur = Math.min(S.cur, out.length - 1);
+  refresh(true); toast(removed ? `Склеено, кадров стало меньше на ${removed}.` : 'Одинаковых соседних кадров нет.');
+}
+
+/* ---------- playback ---------- */
+let play = null;
+function startPlay() {
+  if (play) return;
+  const cum = []; let acc = 0;
+  for (const f of S.frames) { acc += Math.max(1, f.d); cum.push(acc); }
+  const total = acc, t0 = performance.now();
+  play = {raf: 0, idx: -1};
+  const step = now => {
+    if (!play) return;
+    let el = now - t0;
+    if (el >= total) { if (!S.loop) { stopPlay(); return; } el %= total; }
+    let i = 0; while (i < cum.length - 1 && cum[i] <= el) i++;
+    if (i !== play.idx) {
+      const old = $(`.thumb[data-i="${play.idx}"]`); if (old) old.classList.remove('playing');
+      play.idx = i;
+      const t = $(`.thumb[data-i="${i}"]`); if (t) t.classList.add('playing');
+      renderDisplay(S.frames[i]); renderHex(S.frames[i], i);
+    }
+    play.raf = requestAnimationFrame(step);
+  };
+  play.raf = requestAnimationFrame(step);
+  $('#playIcon').setAttribute('d', 'M7 7h10v10H7z');
+  $('#btnPlay').setAttribute('aria-label', 'Стоп');
+}
+function stopPlay() {
+  if (!play) return;
+  cancelAnimationFrame(play.raf);
+  const old = $(`.thumb[data-i="${play.idx}"]`); if (old) old.classList.remove('playing');
+  play = null;
+  $('#playIcon').setAttribute('d', 'M8 5v14l11-7z');
+  $('#btnPlay').setAttribute('aria-label', 'Воспроизвести');
+  renderDisplay(); renderHex();
+}
+
+/* ---------- byte map ---------- */
+function slotOwners() { const o = {}; for (const e of ELEMS) { const s = S.map[e.id]; if (S.flag && s === 0) continue; (o[s] = o[s] || []).push(e.id); } return o; }
+function buildMapUI() {
+  let h = '';
+  for (const [g, name] of GROUPS) {
+    h += `<fieldset class="mgroup"><legend>${name}</legend><div class="mgrid">`;
+    for (const e of ELEMS.filter(x => x.g === g)) h += `<label class="mcell"><span>${e.short}</span><input type="number" inputmode="numeric" min="0" max="46" data-map="${e.id}" aria-label="Байт для: ${e.name}"></label>`;
+    h += '</div></fieldset>';
+  }
+  $('#mapGrid').innerHTML = h;
+  syncMapUI();
+}
+function syncMapUI() {
+  for (const inp of document.querySelectorAll('[data-map]')) if (document.activeElement !== inp) inp.value = S.map[inp.dataset.map];
+  validateMap();
+}
+function validateMap() {
+  const count = {};
+  for (const e of ELEMS) count[S.map[e.id]] = (count[S.map[e.id]] || 0) + 1;
+  let dups = 0, bad = 0;
+  for (const inp of document.querySelectorAll('[data-map]')) {
+    const s = S.map[inp.dataset.map];
+    const isBad = S.flag && s === 0, isDup = count[s] > 1;
+    inp.classList.toggle('bad', isBad); inp.classList.toggle('dup', !isBad && isDup);
+    if (isBad) bad++; else if (isDup) dups++;
+  }
+  const w = $('#mapWarn'), msg = [];
+  if (bad) msg.push(`${bad} ${plural(bad, 'элемент привязан', 'элемента привязаны', 'элементов привязаны')} к байту 0, пока он служебный.`);
+  if (dups) msg.push(`${dups} ${plural(dups, 'элемент делит', 'элемента делят', 'элементов делят')} байт с другими, они будут гореть вместе.`);
+  w.hidden = !msg.length; w.textContent = msg.join(' ');
+  const isDefault = ELEMS.every((e, i) => S.map[e.id] === i + 1) && S.flag;
+  $('#mapState').textContent = isDefault ? 'по умолчанию' : 'изменена';
+  renderTitles();
+}
+function highlight(id, on) { if (nodes[id]) nodes[id].g.classList.toggle('hl', on); }
+
+/* ---------- hex view ---------- */
+const hex2 = v => v.toString(16).padStart(2, '0');
+function renderHex(f = cur(), idx = S.frames.indexOf(f)) {
+  if (!$('#dHex').open) return;
+  const own = slotOwners();
+  let h = '';
+  for (let i = 0; i < FRAME; i++) {
+    let v, cls = 'hx', title, ro = false;
+    if (i === 47) { v = Math.min(255, f.d); cls += ' ro'; ro = true; title = 'Байт 47: длительность кадра'; }
+    else if (i === 0 && S.flag) { v = idx === 0 ? 1 : 0; cls += ' ro'; ro = true; title = 'Байт 0: служебный флаг'; }
+    else {
+      v = f.b[i] | 0; const o = own[i];
+      if (!o) cls += ' free'; if (!o && v) cls += ' warn'; if (v) cls += ' on';
+      title = `Байт ${i}: ${o ? o.map(id => EL[id].name).join(', ') : 'не назначен'}`;
+    }
+    h += `<button type="button" class="${cls}" data-slot="${i}" title="${esc(title)}" aria-label="${esc(title)}, значение ${v}"${ro ? ' disabled' : ''}><small>${i}</small>${hex2(v)}</button>`;
+  }
+  $('#hex').innerHTML = h;
+}
+
+/* ---------- binary ---------- */
+function fileBase() { return (S.name || 'animation').trim().replace(/\.binscled(\.zst)?$/i, '').replace(/[^A-Za-z0-9_.-]+/g, '_').replace(/^_+|_+$/g, '') || 'animation'; }
+function buildRaw() {
+  const parts = []; let first = true;
+  for (const f of S.frames) {
+    const d = Math.max(1, Math.round(f.d || 1)), n = Math.ceil(d / 255), base = Math.floor(d / n), rem = d - base * n;
+    for (let k = 0; k < n; k++) {
+      const fr = new Uint8Array(FRAME);
+      for (let i = 0; i < NSLOT; i++) fr[i] = clamp8(f.b[i]);
+      if (S.flag) fr[0] = first ? 1 : 0;
+      fr[47] = base + (k < rem ? 1 : 0);
+      parts.push(fr); first = false;
+    }
+  }
+  const out = new Uint8Array(parts.length * FRAME);
+  parts.forEach((p, i) => out.set(p, i * FRAME));
+  return out;
+}
+/* zstd frame made of raw blocks: valid for any zstd decoder, header mirrors the original files */
+function zstdEncode(src) {
+  const MAXB = 131072, nb = Math.max(1, Math.ceil(src.length / MAXB));
+  const out = new Uint8Array(6 + nb * 3 + src.length);
+  out.set([0x28, 0xB5, 0x2F, 0xFD, 0x00, 0x88]);
+  let o = 6;
+  for (let i = 0; i < nb; i++) {
+    const chunk = src.subarray(i * MAXB, Math.min(src.length, (i + 1) * MAXB));
+    const h = (i === nb - 1 ? 1 : 0) | (chunk.length << 3);
+    out[o++] = h & 255; out[o++] = (h >>> 8) & 255; out[o++] = (h >>> 16) & 255;
+    out.set(chunk, o); o += chunk.length;
+  }
+  return out;
+}
+function concatU8(list) { const n = list.reduce((a, b) => a + b.length, 0), out = new Uint8Array(n); let o = 0; for (const p of list) { out.set(p, o); o += p.length; } return out; }
+/* ---- compact zstd decoder (RFC 8878), no dictionaries ---- */
+const ZD = (() => {
+  const hb = x => 31 - Math.clz32(x);
+  const LL_BASE = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,20,22,24,28,32,40,48,64,128,256,512,1024,2048,4096,8192,16384,32768,65536];
+  const LL_BITS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,3,3,4,6,7,8,9,10,11,12,13,14,15,16];
+  const ML_BASE = [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,37,39,41,43,47,51,59,67,83,99,131,259,515,1027,2051,4099,8195,16387,32771,65539];
+  const ML_BITS = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,2,2,3,3,4,4,5,7,8,9,10,11,12,13,14,15,16];
+  const LL_DEF = [4,3,2,2,2,2,2,2,2,2,2,2,2,1,1,1,2,2,2,2,2,2,2,2,2,3,2,1,1,1,1,1,-1,-1,-1,-1];
+  const ML_DEF = [1,4,3,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1,-1,-1];
+  const OF_DEF = [1,1,1,1,1,1,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,-1,-1,-1,-1,-1];
+  const fail = m => { throw new Error('zstd: ' + m); };
+
+  class Back {
+    constructor(src, s, e) {
+      if (e <= s) fail('empty bitstream');
+      const last = src[e - 1]; if (!last) fail('bad bitstream end');
+      this.src = src; this.s = s; this.pos = (e - 1 - s) * 8 + hb(last);
+    }
+    read(n) {
+      let v = 0;
+      for (let k = n - 1; k >= 0; k--) { const i = this.pos - n + k; v = v * 2 + (i < 0 ? 0 : (this.src[this.s + (i >> 3)] >> (i & 7)) & 1); }
+      this.pos -= n; return v;
+    }
+    peek(n) { const p = this.pos, v = this.read(n); this.pos = p; return v; }
+    over() { return this.pos < 0; }
+  }
+  function readNCount(src, start, maxSym, maxAL) {
+    let bp = start * 8;
+    const peek = n => { let v = 0; for (let k = 0; k < n; k++) { const i = bp + k; v |= ((src[i >> 3] >> (i & 7)) & 1) << k; } return v; };
+    const rd = n => { const v = peek(n); bp += n; return v; };
+    const AL = rd(4) + 5; if (AL > maxAL) fail('accuracy too high');
+    let remaining = (1 << AL) + 1, threshold = 1 << AL, nb = AL + 1, sym = 0;
+    const norm = [];
+    while (remaining > 1 && sym <= maxSym) {
+      const max = (2 * threshold - 1) - remaining;
+      let count;
+      const low = peek(nb - 1) ;
+      if (low < max) { count = low; bp += nb - 1; }
+      else { count = peek(nb); bp += nb; if (count >= threshold) count -= max; }
+      count--;
+      remaining -= count < 0 ? -count : count;
+      norm[sym++] = count;
+      if (count === 0) { for (;;) { const r = rd(2); for (let k = 0; k < r; k++) norm[sym++] = 0; if (r !== 3) break; } }
+      while (remaining < threshold) { nb--; threshold >>= 1; }
+    }
+    if (remaining !== 1) fail('bad table description');
+    return {AL, norm, size: ((bp + 7) >> 3) - start};
+  }
+  function buildFse(norm, AL) {
+    const size = 1 << AL, sym = new Uint8Array(size), base = new Int32Array(size), nbt = new Uint8Array(size), next = [];
+    let high = size - 1;
+    for (let s = 0; s < norm.length; s++) { const c = norm[s] | 0; if (c === -1) { sym[high--] = s; next[s] = 1; } else next[s] = c; }
+    const step = (size >> 1) + (size >> 3) + 3, mask = size - 1; let pos = 0;
+    for (let s = 0; s < norm.length; s++) for (let i = 0; i < (norm[s] | 0); i++) { sym[pos] = s; do { pos = (pos + step) & mask; } while (pos > high); }
+    for (let u = 0; u < size; u++) { const s = sym[u], x = next[s]++, b = AL - hb(x); nbt[u] = b; base[u] = (x << b) - size; }
+    return {al: AL, sym, base, nb: nbt};
+  }
+  const DEF = {};
+  function getTable(mode, src, p, key, def, defAL, maxSym, maxAL, prev) {
+    if (mode === 0) return [DEF[key] || (DEF[key] = buildFse(def, defAL)), p];
+    if (mode === 1) return [{al: 0, sym: new Uint8Array([src[p]]), base: new Int32Array(1), nb: new Uint8Array(1)}, p + 1];
+    if (mode === 2) { const r = readNCount(src, p, maxSym, maxAL); return [buildFse(r.norm, r.AL), p + r.size]; }
+    if (!prev) fail('repeat table without previous');
+    return [prev, p];
+  }
+  function readHuff(src, p) {
+    const h = src[p], w = [];
+    let q;
+    if (h < 128) {
+      const s = p + 1, r = readNCount(src, s, 255, 6), t = buildFse(r.norm, r.AL), br = new Back(src, s + r.size, s + h);
+      let s1 = br.read(r.AL), s2 = br.read(r.AL);
+      for (;;) {
+        w.push(t.sym[s1]); s1 = t.base[s1] + br.read(t.nb[s1]);
+        if (br.over()) { w.push(t.sym[s2]); break; }
+        w.push(t.sym[s2]); s2 = t.base[s2] + br.read(t.nb[s2]);
+        if (br.over()) { w.push(t.sym[s1]); break; }
+        if (w.length > 255) fail('too many weights');
+      }
+      q = s + h;
+    } else {
+      const n = h - 127;
+      for (let i = 0; i < n; i++) { const b = src[p + 1 + (i >> 1)]; w.push(i & 1 ? b & 15 : b >> 4); }
+      q = p + 1 + ((n + 1) >> 1);
+    }
+    let sum = 0; for (const x of w) if (x) sum += 1 << (x - 1);
+    if (!sum) fail('empty huffman');
+    const maxBits = hb(sum) + 1, rest = (1 << maxBits) - sum;
+    if (rest & (rest - 1)) fail('bad huffman weights');
+    w.push(hb(rest) + 1);
+    const cnt = new Array(maxBits + 2).fill(0); for (const x of w) if (x) cnt[x]++;
+    const start = []; let nx = 0; for (let x = 1; x <= maxBits; x++) { start[x] = nx; nx += cnt[x] << (x - 1); }
+    const size = 1 << maxBits, sym = new Uint8Array(size), nbt = new Uint8Array(size);
+    for (let n = 0; n < w.length; n++) { const x = w[n]; if (!x) continue; const len = (1 << x) >> 1; for (let i = start[x]; i < start[x] + len; i++) { sym[i] = n; nbt[i] = maxBits + 1 - x; } start[x] += len; }
+    return {table: {maxBits, sym, nb: nbt}, end: q};
+  }
+  function huffStream(src, s, e, out, o0, o1, t) {
+    const br = new Back(src, s, e);
+    for (let i = o0; i < o1; i++) { const idx = br.peek(t.maxBits); out[i] = t.sym[idx]; br.pos -= t.nb[idx]; }
+  }
+  class Out {
+    constructor() { this.buf = new Uint8Array(1 << 15); this.n = 0; }
+    ensure(k) { if (this.n + k > this.buf.length) { let s = this.buf.length; while (s < this.n + k) s *= 2; const b = new Uint8Array(s); b.set(this.buf.subarray(0, this.n)); this.buf = b; } }
+    push(a) { this.ensure(a.length); this.buf.set(a, this.n); this.n += a.length; }
+    fill(v, k) { this.ensure(k); this.buf.fill(v, this.n, this.n + k); this.n += k; }
+    match(off, len) { if (off <= 0 || off > this.n) fail('bad offset'); this.ensure(len); const b = this.buf; let s = this.n - off; for (let i = 0; i < len; i++) b[this.n++] = b[s++]; }
+  }
+  function block(src, p, end, out, st) {
+    const b0 = src[p], lt = b0 & 3, sf = (b0 >> 2) & 3;
+    let regen, csize = 0, hs, streams = 1;
+    if (lt < 2) {
+      if ((sf & 1) === 0) { regen = b0 >> 3; hs = 1; }
+      else if (sf === 1) { regen = (b0 >> 4) | (src[p + 1] << 4); hs = 2; }
+      else { regen = (b0 >> 4) | (src[p + 1] << 4) | (src[p + 2] << 12); hs = 3; }
+    } else if (sf < 2) { const v = b0 | (src[p + 1] << 8) | (src[p + 2] << 16); regen = (v >> 4) & 0x3FF; csize = (v >> 14) & 0x3FF; streams = sf === 0 ? 1 : 4; hs = 3; }
+    else if (sf === 2) { const v = (b0 | (src[p + 1] << 8) | (src[p + 2] << 16) | (src[p + 3] << 24)) >>> 0; regen = (v >>> 4) & 0x3FFF; csize = (v >>> 18) & 0x3FFF; streams = 4; hs = 4; }
+    else { const v = (b0 | (src[p + 1] << 8) | (src[p + 2] << 16) | (src[p + 3] << 24)) >>> 0; regen = (v >>> 4) & 0x3FFFF; csize = ((v >>> 22) | (src[p + 4] << 10)) & 0x3FFFF; streams = 4; hs = 5; }
+    p += hs;
+    let lits;
+    if (lt === 0) { lits = src.subarray(p, p + regen); p += regen; }
+    else if (lt === 1) { lits = new Uint8Array(regen).fill(src[p]); p += 1; }
+    else {
+      let q = p; const ce = p + csize;
+      if (lt === 2) { const r = readHuff(src, q); st.huf = r.table; q = r.end; } else if (!st.huf) fail('treeless literals without table');
+      lits = new Uint8Array(regen);
+      if (streams === 1) huffStream(src, q, ce, lits, 0, regen, st.huf);
+      else {
+        const l1 = src[q] | (src[q + 1] << 8), l2 = src[q + 2] | (src[q + 3] << 8), l3 = src[q + 4] | (src[q + 5] << 8), seg = Math.floor((regen + 3) / 4);
+        let a = q + 6;
+        huffStream(src, a, a + l1, lits, 0, seg, st.huf); a += l1;
+        huffStream(src, a, a + l2, lits, seg, 2 * seg, st.huf); a += l2;
+        huffStream(src, a, a + l3, lits, 2 * seg, 3 * seg, st.huf); a += l3;
+        huffStream(src, a, ce, lits, 3 * seg, regen, st.huf);
+      }
+      p = ce;
+    }
+    let ns; const s0 = src[p++];
+    if (s0 < 128) ns = s0; else if (s0 < 255) ns = ((s0 - 128) << 8) + src[p++]; else { ns = src[p] + (src[p + 1] << 8) + 0x7F00; p += 2; }
+    if (!ns) { out.push(lits); return; }
+    const m = src[p++];
+    [st.ll, p] = getTable(m >> 6, src, p, 'll', LL_DEF, 6, 35, 9, st.ll);
+    [st.of, p] = getTable((m >> 4) & 3, src, p, 'of', OF_DEF, 5, 31, 8, st.of);
+    [st.ml, p] = getTable((m >> 2) & 3, src, p, 'ml', ML_DEF, 6, 52, 9, st.ml);
+    const br = new Back(src, p, end), LL = st.ll, OF = st.of, ML = st.ml;
+    let sl = br.read(LL.al), so = br.read(OF.al), sm = br.read(ML.al), lp = 0;
+    const rep = st.rep;
+    for (let i = 0; i < ns; i++) {
+      const oc = OF.sym[so], lc = LL.sym[sl], mc = ML.sym[sm];
+      const ov = Math.pow(2, oc) + br.read(oc);
+      const ml = ML_BASE[mc] + br.read(ML_BITS[mc]);
+      const ll = LL_BASE[lc] + br.read(LL_BITS[lc]);
+      let off;
+      if (ov > 3) { off = ov - 3; rep[2] = rep[1]; rep[1] = rep[0]; rep[0] = off; }
+      else {
+        const idx = ov - 1 + (ll === 0 ? 1 : 0);
+        if (idx === 0) off = rep[0];
+        else {
+          off = idx === 3 ? rep[0] - 1 : rep[idx];
+          if (idx !== 1) rep[2] = rep[1];
+          rep[1] = rep[0]; rep[0] = off;
+        }
+      }
+      if (lp + ll > lits.length) fail('literals overrun');
+      out.push(lits.subarray(lp, lp + ll)); lp += ll;
+      out.match(off, ml);
+      if (i < ns - 1) { sl = LL.base[sl] + br.read(LL.nb[sl]); sm = ML.base[sm] + br.read(ML.nb[sm]); so = OF.base[so] + br.read(OF.nb[so]); }
+    }
+    out.push(lits.subarray(lp));
+  }
+  function decompress(src) {
+    const out = new Out(); let p = 0;
+    const u32 = i => (src[i] | (src[i + 1] << 8) | (src[i + 2] << 16) | (src[i + 3] << 24)) >>> 0;
+    while (p + 4 <= src.length) {
+      const mg = u32(p);
+      if (((mg & 0xFFFFFFF0) >>> 0) === 0x184D2A50) { p += 8 + u32(p + 4); continue; }
+      if (mg !== 0xFD2FB528) fail('not a zstd frame');
+      p += 4;
+      const fhd = src[p++], fcs = fhd >> 6, single = (fhd >> 5) & 1, cs = (fhd >> 2) & 1, did = fhd & 3;
+      if (!single) p++;
+      let dict = 0; for (let k = 0; k < [0, 1, 2, 4][did]; k++) dict |= src[p + k] << (8 * k);
+      if (dict) fail('dictionaries are not supported');
+      p += [0, 1, 2, 4][did];
+      p += fcs === 0 ? (single ? 1 : 0) : [0, 2, 4, 8][fcs];
+      const st = {rep: [1, 4, 8], huf: null, ll: null, of: null, ml: null};
+      for (;;) {
+        if (p + 3 > src.length) fail('truncated');
+        const h = src[p] | (src[p + 1] << 8) | (src[p + 2] << 16); p += 3;
+        const last = h & 1, type = (h >> 1) & 3, size = h >>> 3;
+        if (type === 0) { out.push(src.subarray(p, p + size)); p += size; }
+        else if (type === 1) { out.fill(src[p], size); p += 1; }
+        else if (type === 2) { block(src, p, p + size, out, st); p += size; }
+        else fail('reserved block type');
+        if (last) break;
+      }
+      if (cs) p += 4;
+    }
+    return out.buf.slice(0, out.n);
+  }
+  return {decompress};
+})();
+async function streamThrough(u8, fmt) {
+  const ds = new DecompressionStream(fmt);
+  return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(ds)).arrayBuffer());
+}
+function zstdDecompress(u8) {
+  try { return ZD.decompress(u8); }
+  catch (e) { throw new Error('Файл .zst не распаковался: ' + e.message.replace(/^zstd: /, '') + '.'); }
+}
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(name, data) {
+  const nm = new TextEncoder().encode(name), crc = crc32(data), d = new Date();
+  const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  const date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  const lh = new DataView(new ArrayBuffer(30)), ch = new DataView(new ArrayBuffer(46)), eo = new DataView(new ArrayBuffer(22));
+  lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+  lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+  lh.setUint16(26, nm.length, true); lh.setUint16(28, 0, true);
+  ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true); ch.setUint16(10, 0, true);
+  ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+  ch.setUint16(28, nm.length, true); ch.setUint32(42, 0, true);
+  const cdOff = 30 + nm.length + data.length, cdSize = 46 + nm.length;
+  eo.setUint32(0, 0x06054b50, true); eo.setUint16(8, 1, true); eo.setUint16(10, 1, true); eo.setUint32(12, cdSize, true); eo.setUint32(16, cdOff, true);
+  return concatU8([new Uint8Array(lh.buffer), nm, data, new Uint8Array(ch.buffer), nm, new Uint8Array(eo.buffer)]);
+}
+async function unzipFirst(u8) {
+  const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+  let e = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { e = i; break; }
+  if (e < 0) throw new Error('Архив повреждён.');
+  const cnt = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true);
+  const ents = [];
+  for (let k = 0; k < cnt; k++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    ents.push({name: new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl)), method, csize, off});
+    p += 46 + nl + xl + cl;
+  }
+  const ent = ents.find(x => /\.(zst|binscled)$/i.test(x.name)) || ents.find(x => !x.name.endsWith('/'));
+  if (!ent) throw new Error('В архиве нет файлов.');
+  const ds = ent.off + 30 + dv.getUint16(ent.off + 26, true) + dv.getUint16(ent.off + 28, true);
+  const body = u8.subarray(ds, ds + ent.csize);
+  if (ent.method === 0) return {name: ent.name, data: body};
+  if (ent.method === 8) return {name: ent.name, data: await streamThrough(body, 'deflate-raw')};
+  throw new Error('Неизвестный способ сжатия в архиве.');
+}
+function parseRaw(u8) {
+  if (u8.length < FRAME) throw new Error(`Файл короче одного кадра (${u8.length} байт из 48).`);
+  const n = Math.floor(u8.length / FRAME);
+  let flag = u8[0] === 1;
+  for (let k = 1; k < n && flag; k++) if (u8[k * FRAME] !== 0) flag = false;
+  const frames = [];
+  for (let k = 0; k < n; k++) {
+    const b = Array.from(u8.subarray(k * FRAME, k * FRAME + NSLOT));
+    if (flag) b[0] = 0;
+    frames.push({b, d: u8[k * FRAME + 47] || 1});
+  }
+  return {frames, flag, extra: u8.length % FRAME};
+}
+function b64ToU8(s) { const bin = atob(s); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+function u8ToB64(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+
+/* ---------- load / import ---------- */
+function loadProject(frames, name, flag) {
+  stopPlay(); pushUndo();
+  S.frames = frames; S.cur = 0;
+  if (name) { S.name = name; $('#nameIn').value = name; }
+  if (typeof flag === 'boolean' && flag !== S.flag) { S.flag = flag; $('#flagChk').checked = flag; syncMapUI(); }
+  refresh(true);
+}
+async function importFile(file) {
+  try {
+    let u8 = new Uint8Array(await file.arrayBuffer());
+    let name = file.name;
+    if (u8[0] === 0x50 && u8[1] === 0x4B) { const z = await unzipFirst(u8); u8 = z.data; name = z.name; }
+    if (u8.length >= 4 && u8[0] === 0x28 && u8[1] === 0xB5 && u8[2] === 0x2F && u8[3] === 0xFD) u8 = zstdDecompress(u8);
+    const r = parseRaw(u8);
+    const base = name.split('/').pop().replace(/(\.zip)?$/i, '').replace(/[._]binscled([._]zst)?$/i, '').replace(/\.zst$/i, '');
+    loadProject(r.frames, base, r.flag);
+    let msg = `Открыто: ${r.frames.length} ${plural(r.frames.length, 'кадр', 'кадра', 'кадров')}.`;
+    if (!r.flag) msg += ' Байт 0 не похож на служебный флаг, он оставлен как есть.';
+    if (r.extra) msg += ` Лишние ${r.extra} байт в конце отброшены.`;
+    toast(msg);
+  } catch (e) { toast(e.message || 'Файл не прочитался.'); }
+}
+const RINGING_B64 = 'AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAFBQAAAAAAAAAAAAAFBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAUFAAAAAAAAAAAAAAUFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAoKAAAAAAAAAAAAAAoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAABAQAAAAAAAAAAAAABAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAABXVwAAAAAAAAAAAABXVwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAABsbAAAAAAAAAAAAABsbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAB6egAAAAAAAAAAAAB6egAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAACAgAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAACFhQAFBQAAAAAFBQCFhQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAACTkwAUFAAAAAAUFACTkwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAACoqAAoKAAAAAAoKACoqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAC/vwBAQAAAAABAQAC/vwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAADX1wBXVwAAAABXVwDX1wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAADr6wBsbAAAAABsbADr6wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAD6+gB6egAAAAB6egD6+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAD//wCAgAAAAACAgAD//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAFBQAAAAAAAAD//wCFhQAAAACFhQD//wAAAAAAAAAFBQAAAAAAAAAAAAAAAAAUAAAUFAAAAAAAAAD//wCTkwAAAACTkwD//wAAAAAAAAAUFAAAAAAAAAAAAAAAAAAUAAAoKAAAAAAAAAD//wCoqAAAAACoqAD//wAAAAAAAAAoKAAAAAAAAAAAAAAAAAAUAABAQAAAAAAAAAD//wC/vwAAAAC/vwD//wAAAAAAAABAQAAAAAAAAAAAAAAAAAAUAABXVwAAAAAAAAD//wDX1wAAAADX1wD//wAAAAAAAABXVwAAAAAAAAAAAAAAAAAUAABsbAAAAAAAAAD//wDr6wAAAADr6wD//wAAAAAAAABsbAAAAAAAAAAAAAAAAAAUAAB6egAAAAAAAAD//wD6+gAAAAD6+gD//wAAAAAAAAB6egAAAAAAAAAAAAAAAAAUAACAgAAAAAAAAAD//wD//wAAAAD//wD//wAAAAAAAACAgAAAAAAAAAAAAAAAAAAUAACFhQAFBQAAAAD6+gD//wAAAAD//wD6+gAAAAAFBQCFhQAAAAAAAAAAAAAAAAAUAACTkwAUFAAAAADr6wD//wAAAAD//wDr6wAAAAAUFACTkwAAAAAAAAAAAAAAAAAUAACoqAAoKAAAAADX1wD//wAAAAD//wDX1wAAAAAoKACoqAAAAAAAAAAAAAAAAAAUAAC/vwBAQAAAAAC/vwD//wAAAAD//wC/vwAAAABAQAC/vwAAAAAAAAAAAAAAAAAUAADX1wBXVwAAAACoqAD//wAAAAD//wCoqAAAAABXVwDX1wAAAAAAAAAAAAAAAAAUAADr6wBsbAAAAACTkwD//wAAAAD//wCTkwAAAABsbADr6wAAAAAAAAAAAAAAAAAUAAD6+gB6egAAAACFhQD//wAAAAD//wCFhQAAAAB6egD6+gAAAAAAAAAAAAAAAAAUAAD//wCAgAAAAACAgAD//wAAAAD//wCAgAAAAACAgAD//wAAAAAAAAAAAAAAAAAUAAD//wCFhQAAAAB6egD6+gAAAAD6+gB6egAAAACFhQD//wAAAAAAAAAAAAAAAAAUAAD//wCTkwAAAABsbADr6wAAAADr6wBsbAAAAACTkwD//wAAAAAAAAAAAAAAAAAUAAD//wCoqAAAAABXVwDX1wAAAADX1wBXVwAAAACoqAD//wAAAAAAAAAAAAAAAAAUAAD//wC/vwAAAABAQAC/vwAAAAC/vwBAQAAAAAC/vwD//wAAAAAAAAAAAAAAAAAUAAD//wDX1wAAAAAoKACoqAAAAACoqAAoKAAAAADX1wD//wAAAAAAAAAAAAAAAAAUAAD//wDr6wAAAAAUFACTkwAAAACTkwAUFAAAAADr6wD//wAAAAAAAAAAAAAAAAAUAAD//wD6+gAAAAAFBQCFhQAAAACFhQAFBQAAAAD6+gD//wAAAAAAAAAAAAAAAAAUAAD//wD//wAAAAAAAACAgAAAAACAgAAAAAAAAAD//wD//wAAAAAAAAAAAAAAAAAUAAD6+gD//wAAAAAAAAB6egAAAAB6egAAAAAAAAD//wD6+gAAAAAAAAAAAAAAAAAUAADr6wD//wAAAAAAAABsbAAAAABsbAAAAAAAAAD//wDr6wAAAAAAAAAAAAAAAAAUAADX1wD//wAAAAAAAABXVwAAAABXVwAAAAAAAAD//wDX1wAAAAAAAAAAAAAAAAAUAAC/vwD//wAAAAAAAABAQAAAAABAQAAAAAAAAAD//wC/vwAAAAAAAAAAAAAAAAAUAACoqAD//wAAAAAAAAAoKAAAAAAoKAAAAAAAAAD//wCoqAAAAAAAAAAAAAAAAAAUAACTkwD//wAAAAAAAAAUFAAAAAAUFAAAAAAAAAD//wCTkwAAAAAAAAAAAAAAAAAUAACFhQD//wAAAAAAAAAFBQAAAAAFBQAAAAAAAAD//wCFhQAAAAAAAAAAAAAAAAAUAACAgAD//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wCAgAAAAAAAAAAAAAAAAAAUAAB6egD6+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAD6+gB6egAAAAAAAAAAAAAAAAAUAABsbADr6wAAAAAAAAAAAAAAAAAAAAAAAAAAAADr6wBsbAAAAAAAAAAAAAAAAAAUAABXVwDX1wAAAAAAAAAAAAAAAAAAAAAAAAAAAADX1wBXVwAAAAAAAAAAAAAAAAAUAABAQAC/vwAAAAAAAAAAAAAAAAAAAAAAAAAAAAC/vwBAQAAAAAAAAAAAAAAAAAAUAAAoKACoqAAAAAAAAAAAAAAAAAAAAAAAAAAAAACoqAAoKAAAAAAAAAAAAAAAAAAUAAAUFACTkwAAAAAAAAAAAAAAAAAAAAAAAAAAAACTkwAUFAAAAAAAAAAAAAAAAAAUAAAFBQCFhQAAAAAAAAAAAAAAAAAAAAAAAAAAAACFhQAFBQAAAAAAAAAAAAAAAAAUAAAAAACAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAAAAAAAAAUAAAAAAB6egAAAAAAAAAAAAAAAAAAAAAAAAAAAAB6egAAAAAAAAAAAAAAAAAAAAAUAAAAAABsbAAAAAAAAAAAAAAAAAAAAAAAAAAAAABsbAAAAAAAAAAAAAAAAAAAAAAUAAAAAABXVwAAAAAAAAAAAAAAAAAAAAAAAAAAAABXVwAAAAAAAAAAAAAAAAAAAAAUAAAAAABAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAoKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoKAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAUFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUFAAAAAAAAAAAAAAAAAAAAAAUAAAAAAAFBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFBQAAAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU';
+function presetFrames(key) {
+  if (key === 'ringing') return {...parseRaw(b64ToU8(RINGING_B64)), name:'ringing'};
+  if (key === 'update') { const u = new Uint8Array(48); u[0] = 1; u[47] = 20; return {...parseRaw(u), name:'update_applying'}; }
+  const flag = S.flag;
+  if (key === 'clock') {
+    const a = {b: blankB(), d: 500}, b = {b: blankB(), d: 500};
+    applyText(a, '08:24', 255); applyText(b, '08 24', 255); setVal(a, 'dot', 255); setVal(b, 'dot', 255);
+    return {frames:[a, b], flag, name:'clock'};
+  }
+  if (key === 'wave') {
+    const frames = [], order = ['d1','d2','mid','d4','d5','dot'];
+    for (let step = 0; step < order.length + 3; step++) {
+      const f = {b: blankB(), d: 90};
+      order.forEach((g, i) => { const dist = step - i; const v = dist === 0 ? 255 : dist === 1 ? 110 : dist === 2 ? 30 : 0; for (const e of ELEMS) if (e.g === g) setVal(f, e.id, v); });
+      frames.push(f);
+    }
+    return {frames, flag, name:'wave'};
+  }
+  if (key === 'scan') {
+    const frames = [{b: blankB().map((_, i) => (flag && i === 0) ? 0 : 255), d: 800, n:'всё'}, {b: blankB(), d: 500}];
+    for (let s = flag ? 1 : 0; s < NSLOT; s++) { const b = blankB(); b[s] = 255; frames.push({b, d: 450, n:`байт ${s}`}); frames.push({b: blankB(), d: 150}); }
+    return {frames, flag, name:'scan'};
+  }
+  return {frames:[{b: blankB(), d: 20}], flag, name:'animation'};
+}
+
+/* ---------- download ---------- */
+let dlCap = null;
+const hasUse = !!(window.claude && typeof window.claude.use === 'function');
+if (hasUse) window.claude.use('downloads').then(d => { dlCap = d; }).catch(() => {});
+async function download() {
+  stopPlay();
+  const zst = zstdEncode(buildRaw()), fname = fileBase() + '.binscled.zst';
+  if (dlCap) {
+    try {
+      await dlCap.save({filename: fname + '.zip', data: new Blob([makeZip(fname, zst)])});
+      toast(`Сохранено: ${fname}.zip`);
+    } catch (e) {
+      const code = e && e.code;
+      if (code === 'declined') toast('Скачивание отменено.');
+      else if (code === 'rate_limited') toast('Окно сохранения уже открыто. Подожди пару секунд.');
+      else { toast('Скачать здесь не получилось. Возьми файл как base64 в разделе «Файл».'); showB64(); }
+    }
+    return;
+  }
+  if (hasUse) { toast('Скачивание тут недоступно. Возьми файл как base64 в разделе «Файл».'); showB64(); return; }
+  const url = URL.createObjectURL(new Blob([zst], {type: 'application/octet-stream'}));
+  const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  toast(`Сохранено: ${fname}`);
+}
+function fillB64() {
+  const fname = fileBase() + '.binscled.zst';
+  $('#b64Out').value = `printf '%s' '${u8ToB64(zstdEncode(buildRaw()))}' | base64 -d > ${fname}`;
+}
+function showB64() { $('#dFile').open = true; $('#b64Box').hidden = false; fillB64(); $('#b64Box').scrollIntoView({block: 'nearest', behavior: 'smooth'}); }
+
+/* ---------- toast ---------- */
+let toastT = 0;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3800); }
+
+/* ---------- wiring ---------- */
+function setBrush(v) {
+  S.brush = clamp8(v);
+  $('#brush').value = S.brush; $('#brushOut').textContent = S.brush;
+  $('#swatch').style.background = S.brush ? mix(OFF, ON, tOf(S.brush)) : 'transparent';
+  $('#swatch').style.borderColor = S.brush ? '#e2b13c' : 'var(--text-2)';
+  for (const c of document.querySelectorAll('#brushChips .chip')) c.classList.toggle('on', +c.dataset.b === S.brush);
+  save();
+}
+function init() {
+  buildDisplay(); bindDisplay(); buildMapUI();
+  $('#nameIn').value = S.name; $('#flagChk').checked = S.flag;
+  $('#btnLoop').classList.toggle('on', S.loop); $('#btnLoop').setAttribute('aria-pressed', String(S.loop));
+  setBrush(S.brush);
+  refresh(true);
+
+  $('#brush').addEventListener('input', e => setBrush(e.target.value));
+  $('#brushChips').addEventListener('click', e => { const c = e.target.closest('.chip'); if (c) setBrush(c.dataset.b); });
+  $('#btnClear').onclick = opClear; $('#btnFill').onclick = opFill; $('#btnInvert').onclick = opInvert;
+  $('#btnUndo').onclick = doUndo; $('#btnRedo').onclick = doRedo;
+  $('#btnAdd').onclick = opAdd; $('#btnDup').onclick = opDup; $('#btnDel').onclick = opDel;
+  $('#btnLeft').onclick = () => opMove(-1); $('#btnRight').onclick = () => opMove(1);
+  $('#btnPlay').onclick = () => play ? stopPlay() : startPlay();
+  $('#btnLoop').onclick = () => { S.loop = !S.loop; $('#btnLoop').classList.toggle('on', S.loop); $('#btnLoop').setAttribute('aria-pressed', String(S.loop)); save(); };
+  $('#strip').addEventListener('click', e => { const t = e.target.closest('.thumb'); if (t) selectFrame(+t.dataset.i); });
+  $('#durIn').addEventListener('change', e => { const v = Math.max(1, Math.min(60000, parseInt(e.target.value, 10) || 1)); stopPlay(); pushUndo(); cur().d = v; e.target.value = v; refresh(false); });
+  $('#btnDurAll').onclick = () => { const v = Math.max(1, Math.min(60000, parseInt($('#durIn').value, 10) || 1)); stopPlay(); pushUndo(); S.frames.forEach(f => f.d = v); refresh(true); toast(`У всех кадров теперь ${v} мс.`); };
+
+  $('#nameIn').addEventListener('input', e => { S.name = e.target.value; renderMeta(); save(); });
+  $('#btnDownload').onclick = download; $('#btnDownload2').onclick = download;
+  $('#btnOpen').onclick = () => $('#fileIn').click();
+  $('#fileIn').addEventListener('change', e => { const f = e.target.files[0]; if (f) importFile(f); e.target.value = ''; });
+  document.addEventListener('dragover', e => e.preventDefault());
+  document.addEventListener('drop', e => { e.preventDefault(); const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) importFile(f); });
+  $('#presetSel').addEventListener('change', e => {
+    const k = e.target.value; if (!k) return;
+    const p = presetFrames(k); loadProject(p.frames, p.name, p.flag); e.target.value = '';
+    toast(`Загружен пример: ${p.name}. Отменить можно кнопкой «Отменить».`);
+  });
+  $('#btnB64').onclick = () => { if ($('#b64Box').hidden) showB64(); else $('#b64Box').hidden = true; };
+  $('#btnCopy').onclick = async () => {
+    const ta = $('#b64Out');
+    try { await navigator.clipboard.writeText(ta.value); toast('Скопировано.'); }
+    catch (e) { ta.focus(); ta.select(); try { document.execCommand('copy'); toast('Скопировано.'); } catch (e2) { toast('Выдели текст и скопируй вручную.'); } }
+  };
+
+  $('#btnText').onclick = () => { stopPlay(); pushUndo(); const bad = applyText(cur(), $('#txtIn').value, onV()); refresh(false); if (bad.length) toast(`Нет символа для: ${[...new Set(bad)].join(' ')}. Там пусто.`); };
+  $('#btnMq').onclick = () => {
+    const txt = $('#mqIn').value; if (!txt.trim()) { toast('Впиши текст для бегущей строки.'); return; }
+    const step = Math.max(1, Math.min(60000, parseInt($('#mqStep').value, 10) || 220));
+    const chars = [...'    ' + txt + '    '], base = cur(), list = [], v = onV();
+    for (let i = 0; i + 4 <= chars.length; i++) { const f = cloneF(base); delete f.n; f.d = step; DIGITS.forEach((d, k) => setDigit(f, d.n, glyphFor(chars[i + k]) || '', v)); list.push(f); }
+    stopPlay(); pushUndo();
+    if ($('#mqReplace').checked) { S.frames = list; S.cur = 0; } else { insertFrames(S.cur + 1, list); S.cur++; }
+    refresh(true); toast(`Добавлено ${list.length} ${plural(list.length, 'кадр', 'кадра', 'кадров')}.`);
+  };
+  $('#btnTween').onclick = opTween; $('#btnFadeIn').onclick = () => opFade(true); $('#btnFadeOut').onclick = () => opFade(false); $('#btnMerge').onclick = opMerge;
+
+  $('#mapGrid').addEventListener('change', e => {
+    const inp = e.target.closest('[data-map]'); if (!inp) return;
+    const v = parseInt(inp.value, 10);
+    if (!Number.isInteger(v) || v < 0 || v >= NSLOT) { inp.value = S.map[inp.dataset.map]; toast('Номер байта от 0 до 46.'); return; }
+    stopPlay(); S.map[inp.dataset.map] = v; validateMap(); refresh(true);
+  });
+  $('#mapGrid').addEventListener('focusin', e => { const i = e.target.closest('[data-map]'); if (i) highlight(i.dataset.map, true); });
+  $('#mapGrid').addEventListener('focusout', e => { const i = e.target.closest('[data-map]'); if (i) highlight(i.dataset.map, false); });
+  $('#flagChk').addEventListener('change', e => { S.flag = e.target.checked; validateMap(); refresh(true); });
+  $('#btnMapReset').onclick = () => { S.map = defaultMap(); S.flag = true; $('#flagChk').checked = true; syncMapUI(); refresh(true); toast('Карта байтов сброшена.'); };
+  $('#btnProbe').onclick = () => {
+    const s = parseInt($('#probeIn').value, 10);
+    if (!Number.isInteger(s) || s < 0 || s >= NSLOT) { toast('Номер байта от 0 до 46.'); return; }
+    if (S.flag && s === 0) { toast('Байт 0 сейчас служебный. Сними галочку, чтобы проверить его.'); return; }
+    stopPlay(); pushUndo(); const b = blankB(); b[s] = 255; insertFrames(S.cur + 1, [{b, d: 1000, n: `байт ${s}`}]); S.cur++; refresh(true);
+  };
+
+  $('#dHex').addEventListener('toggle', () => renderHex());
+  $('#hex').addEventListener('click', e => {
+    const c = e.target.closest('.hx'); if (!c || c.disabled) return;
+    const s = +c.dataset.slot; stopPlay(); pushUndo();
+    const f = cur(); f.b[s] = S.brush === 0 ? 0 : (f.b[s] === S.brush ? 0 : S.brush); refresh(false);
+  });
+  $('#hex').addEventListener('pointerover', e => { const c = e.target.closest('.hx'); if (!c) return; const own = slotOwners()[+c.dataset.slot] || []; own.forEach(id => highlight(id, true)); });
+  $('#hex').addEventListener('pointerout', e => { const c = e.target.closest('.hx'); if (!c) return; const own = slotOwners()[+c.dataset.slot] || []; own.forEach(id => highlight(id, false)); });
+
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); e.shiftKey ? doRedo() : doUndo(); }
+    else if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); doRedo(); }
+    else if (e.key === ' ' && !e.target.closest('[data-arrow]') && tag !== 'button') { e.preventDefault(); play ? stopPlay() : startPlay(); }
+    else if (e.key === 'ArrowLeft' && tag !== 'button') selectFrame(S.cur - 1);
+    else if (e.key === 'ArrowRight' && tag !== 'button') selectFrame(S.cur + 1);
+  });
+}
+window.BSE = {buildRaw, zstdEncode, zstdDecompress, parseRaw, makeZip, get state() { return S; }, presetFrames, loadProject, importFile};
+init();
+})();
+</script>
+</body>
+</html>
