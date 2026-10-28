@@ -1,0 +1,1836 @@
+/* ==========================================================================
+   Yandex Station Extended — Pure Material 3 Expressive Design System
+   Reference: https://m3.material.io
+   Pure tonal surfaces, zero gradients, zero decorative borders, zero blur.
+   ========================================================================== */
+
+:root,
+[data-theme="dark"] {
+  /* Official M3 Baseline & Expressive Tonal Palette — Dark Scheme */
+  --md-sys-color-primary: #D0BCFF;
+  --md-sys-color-on-primary: #381E72;
+  --md-sys-color-primary-container: #4F378B;
+  --md-sys-color-on-primary-container: #EADDFF;
+
+  --md-sys-color-secondary: #CCC2DC;
+  --md-sys-color-on-secondary: #332D41;
+  --md-sys-color-secondary-container: #4A4458;
+  --md-sys-color-on-secondary-container: #E8DEF8;
+
+  --md-sys-color-tertiary: #EFB8C8;
+  --md-sys-color-on-tertiary: #492532;
+  --md-sys-color-tertiary-container: #633B48;
+  --md-sys-color-on-tertiary-container: #FFD8E4;
+
+  /* Semantic Tonal Containers (Flat M3 Tones — No Gradients) */
+  --md-sys-color-info-container: #004A77;
+  --md-sys-color-on-info-container: #C2E7FF;
+  --md-sys-color-info: #7FCFFF;
+  --md-sys-color-on-info: #003355;
+
+  --md-sys-color-star-container: #574500;
+  --md-sys-color-on-star-container: #FFDF90;
+  --md-sys-color-star: #F4C430;
+  --md-sys-color-on-star: #3C2F00;
+
+  --md-sys-color-warning-container: #523600;
+  --md-sys-color-on-warning-container: #FFDCBE;
+  --md-sys-color-warning: #FFB951;
+
+  /* M3 Surface Container Hierarchy */
+  --md-sys-color-surface: #141218;
+  --md-sys-color-surface-dim: #141218;
+  --md-sys-color-surface-bright: #3B383E;
+  --md-sys-color-surface-container-lowest: #0F0D13;
+  --md-sys-color-surface-container-low: #1D1B20;
+  --md-sys-color-surface-container: #211F26;
+  --md-sys-color-surface-container-high: #2B2930;
+  --md-sys-color-surface-container-highest: #36343B;
+
+  --md-sys-color-on-surface: #E6E0E9;
+  --md-sys-color-on-surface-variant: #CAC4D0;
+  --md-sys-color-outline: #938F99;
+  --md-sys-color-outline-variant: #49454F;
+  --md-sys-color-scrim: rgba(0, 0, 0, 0.55);
+
+  /* M3 Expressive Shape Scale */
+  --md-sys-shape-corner-xs: 8px;
+  --md-sys-shape-corner-sm: 12px;
+  --md-sys-shape-corner-md: 16px;
+  --md-sys-shape-corner-lg: 24px;
+  --md-sys-shape-corner-xl: 28px;
+  --md-sys-shape-corner-2xl: 36px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* M3 Expressive Motion Tokens (Spring & Emphasized Easing) */
+  --md-sys-motion-spring-fast: cubic-bezier(0.42, 1.67, 0.21, 0.90);
+  --md-sys-motion-spring-default: cubic-bezier(0.38, 1.21, 0.22, 1.00);
+  --md-sys-motion-emphasized: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+  --md-sys-motion-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+
+  /* Typography */
+  --md-sys-typescale-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --md-sys-typescale-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+[data-theme="light"] {
+  /* Official M3 Baseline & Expressive Tonal Palette — Light Scheme */
+  --md-sys-color-primary: #6750A4;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #EADDFF;
+  --md-sys-color-on-primary-container: #21005D;
+
+  --md-sys-color-secondary: #625B71;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #E8DEF8;
+  --md-sys-color-on-secondary-container: #1D192B;
+
+  --md-sys-color-tertiary: #7D5260;
+  --md-sys-color-on-tertiary: #FFFFFF;
+  --md-sys-color-tertiary-container: #FFD8E4;
+  --md-sys-color-on-tertiary-container: #31111D;
+
+  /* Semantic Tonal Containers (Light) */
+  --md-sys-color-info-container: #C2E7FF;
+  --md-sys-color-on-info-container: #001D35;
+  --md-sys-color-info: #00639B;
+  --md-sys-color-on-info: #FFFFFF;
+
+  --md-sys-color-star-container: #FFDF90;
+  --md-sys-color-on-star-container: #241A00;
+  --md-sys-color-star: #725C00;
+  --md-sys-color-on-star: #FFFFFF;
+
+  --md-sys-color-warning-container: #FFDCBE;
+  --md-sys-color-on-warning-container: #2C1600;
+  --md-sys-color-warning: #8B5000;
+
+  /* M3 Surface Container Hierarchy (Light) */
+  --md-sys-color-surface: #FEF7FF;
+  --md-sys-color-surface-dim: #DED8E1;
+  --md-sys-color-surface-bright: #FEF7FF;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #F7F2FA;
+  --md-sys-color-surface-container: #F3EDF7;
+  --md-sys-color-surface-container-high: #ECE6F0;
+  --md-sys-color-surface-container-highest: #E6E0E9;
+
+  --md-sys-color-on-surface: #1D1B20;
+  --md-sys-color-on-surface-variant: #49454F;
+  --md-sys-color-outline: #79747E;
+  --md-sys-color-outline-variant: #CAC4D0;
+  --md-sys-color-scrim: rgba(0, 0, 0, 0.40);
+}
+
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+  font-family: var(--md-sys-typescale-font);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background-color 0.25s var(--md-sys-motion-emphasized),
+              color 0.25s var(--md-sys-motion-emphasized);
+}
+
+/* Skip Link */
+.m3-skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 1000;
+  padding: 12px 24px;
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-full);
+  font-weight: 700;
+  text-decoration: none;
+  transition: top 0.3s var(--md-sys-motion-spring-fast);
+}
+
+.m3-skip-link:focus {
+  top: 16px;
+}
+
+/* ==========================================================================
+   Top App Bar (Pure M3 Tonal Surface — Changes Tone on Scroll, No Blur/Border)
+   ========================================================================== */
+.m3-top-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--md-sys-color-surface);
+  transition: background-color 0.25s var(--md-sys-motion-emphasized);
+}
+
+.m3-top-app-bar.is-scrolled {
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.m3-top-app-bar__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  height: 68px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.m3-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Standard M3 Icon Button */
+.m3-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--md-sys-shape-corner-full);
+  border: none;
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.3s var(--md-sys-motion-spring-fast),
+              border-radius 0.3s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.m3-icon-btn:hover {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.m3-icon-btn:active {
+  transform: scale(0.92);
+}
+
+.m3-icon-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.m3-brand__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--md-sys-color-on-surface);
+  min-width: 0;
+}
+
+.m3-brand__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--md-sys-shape-corner-sm);
+  object-fit: cover;
+  transition: transform 0.35s var(--md-sys-motion-spring-fast),
+              border-radius 0.35s var(--md-sys-motion-spring-fast);
+}
+
+.m3-brand__link:hover .m3-brand__logo {
+  transform: scale(1.06);
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.m3-brand__titles {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.m3-brand__name {
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m3-brand__topic-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+/* Top Bar Actions & M3 Search Bar */
+.m3-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.m3-search-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: var(--md-sys-shape-corner-full);
+  border: none;
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 230px;
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              transform 0.3s var(--md-sys-motion-spring-fast);
+}
+
+.m3-search-trigger:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-search-trigger svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.m3-search-trigger__text {
+  flex: 1;
+  text-align: left;
+}
+
+.m3-search-trigger__kbd {
+  padding: 3px 8px;
+  border-radius: var(--md-sys-shape-corner-xs);
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+/* M3 Filled Tonal Button: "Создать статью" */
+.m3-btn-new-article {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.3s var(--md-sys-motion-spring-fast),
+              border-radius 0.3s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.m3-btn-new-article:hover {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.m3-btn-new-article svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  fill: none;
+}
+
+/* GitHub Source Chip in Header */
+.m3-source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.3s var(--md-sys-motion-spring-fast),
+              border-radius 0.3s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease;
+}
+
+.m3-source-chip:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.m3-source-chip svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Main 3-Column Layout (No stacking-context trap!)
+   ========================================================================== */
+.m3-layout {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px 20px 64px;
+  display: grid;
+  grid-template-columns: 296px minmax(0, 1fr) 232px;
+  gap: 24px;
+  align-items: start;
+  transition: grid-template-columns 0.35s var(--md-sys-motion-emphasized);
+}
+
+body.drawer-collapsed .m3-layout {
+  grid-template-columns: minmax(0, 1fr) 232px;
+}
+
+body.drawer-collapsed .m3-nav-drawer {
+  display: none;
+}
+
+/* Primary Navigation Sidebar (Pure M3 Navigation Drawer — Flat Tonal Surface) */
+.m3-nav-drawer {
+  position: sticky;
+  top: 84px;
+  max-height: calc(100vh - 104px);
+  overflow-y: auto;
+  padding: 16px 12px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container-low);
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+}
+
+.m3-nav-drawer__header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px 16px;
+  margin-bottom: 8px;
+}
+
+.m3-nav-drawer__source {
+  display: none;
+  margin: 0 8px 12px;
+}
+
+.m3-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m3-nav-sublist {
+  list-style: none;
+  margin: 4px 0 6px 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.m3-nav-group {
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.m3-nav-group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.m3-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.86rem;
+  font-weight: 500;
+  text-decoration: none;
+  line-height: 1.35;
+  transition: background-color 0.2s ease,
+              color 0.2s ease,
+              transform 0.25s var(--md-sys-motion-spring-fast);
+}
+
+.m3-nav-link:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-nav-link--active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: 700;
+}
+
+.m3-nav-link--section {
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-nav-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--md-sys-shape-corner-full);
+  border: none;
+  background-color: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.m3-nav-toggle-btn:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-nav-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  transition: transform 0.3s var(--md-sys-motion-spring-fast);
+}
+
+.m3-nav-group.is-open > .m3-nav-group__header > .m3-nav-toggle-btn svg {
+  transform: rotate(180deg);
+}
+
+.m3-nav-group__body {
+  display: none;
+}
+
+.m3-nav-group.is-open > .m3-nav-group__body {
+  display: block;
+  animation: navSlideDown 0.25s var(--md-sys-motion-emphasized-decelerate);
+}
+
+@keyframes navSlideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   Main Article Content & Pure M3 Expressive Hero Container
+   ========================================================================== */
+.m3-main-content {
+  min-width: 0;
+}
+
+.m3-article {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Hero Card — Pure Tonal Container (No gradients, no borders) */
+.m3-hero-card {
+  padding: 36px;
+  border-radius: var(--md-sys-shape-corner-2xl);
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-hero-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.m3-expressive-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.m3-expressive-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--md-sys-color-primary);
+}
+
+.m3-article-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m3-action-icon-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.3s var(--md-sys-motion-spring-fast),
+              border-radius 0.3s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.m3-action-icon-link:hover {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-sm);
+}
+
+.m3-action-icon-link svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.m3-hero-body {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.m3-hero-logo-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.m3-hero-logo {
+  width: 136px;
+  height: 136px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  object-fit: cover;
+  transition: transform 0.45s var(--md-sys-motion-spring-fast),
+              border-radius 0.45s var(--md-sys-motion-spring-fast);
+}
+
+.m3-hero-logo-wrap:hover .m3-hero-logo {
+  transform: scale(1.05) rotate(-3deg);
+  border-radius: var(--md-sys-shape-corner-2xl);
+}
+
+.m3-hero-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.m3-hero-title {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-headerlink {
+  margin-left: 8px;
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  opacity: 0;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+h1:hover .m3-headerlink,
+h2:hover .m3-headerlink {
+  opacity: 0.85;
+}
+
+.m3-hero-lead {
+  margin: 0;
+  font-size: 1.06rem;
+  line-height: 1.65;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ==========================================================================
+   Telegram & GitHub Community Banners (Pure Flat M3 Tonal Containers)
+   ========================================================================== */
+.tg-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 26px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-info-container);
+  color: var(--md-sys-color-on-info-container);
+  transition: transform 0.35s var(--md-sys-motion-spring-default),
+              border-radius 0.35s var(--md-sys-motion-spring-default);
+}
+
+.tg-banner:hover {
+  transform: translateY(-2px);
+  border-radius: var(--md-sys-shape-corner-2xl);
+}
+
+.tg-banner__icon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--md-sys-shape-corner-md);
+  background-color: var(--md-sys-color-info);
+  color: var(--md-sys-color-on-info);
+  transition: transform 0.4s var(--md-sys-motion-spring-fast),
+              border-radius 0.4s var(--md-sys-motion-spring-fast);
+}
+
+.tg-banner:hover .tg-banner__icon {
+  transform: scale(1.08);
+  border-radius: 50%;
+}
+
+.tg-banner__icon svg {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+}
+
+.tg-banner__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.tg-banner__text p {
+  margin: 0;
+}
+
+.tg-banner__text a {
+  color: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tg-banner__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-info);
+  color: var(--md-sys-color-on-info);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.3s var(--md-sys-motion-spring-fast),
+              border-radius 0.3s var(--md-sys-motion-spring-fast);
+}
+
+.tg-banner__button:hover {
+  border-radius: var(--md-sys-shape-corner-md);
+  transform: scale(1.03);
+}
+
+.tg-banner__button svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* GitHub Star Banner Variant (Pure Tonal Container) */
+.gh-banner {
+  background-color: var(--md-sys-color-star-container);
+  color: var(--md-sys-color-on-star-container);
+}
+
+.gh-banner .tg-banner__icon {
+  background-color: var(--md-sys-color-star);
+  color: var(--md-sys-color-on-star);
+}
+
+.gh-banner .tg-banner__button {
+  background-color: var(--md-sys-color-star);
+  color: var(--md-sys-color-on-star);
+}
+
+/* ==========================================================================
+   Section Headers & Typography
+   ========================================================================== */
+.m3-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.m3-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.m3-section-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   "С чего начать" — Pure M3 Filled Surface Cards
+   ========================================================================== */
+.m3-steps-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.m3-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 24px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container);
+  transition: transform 0.35s var(--md-sys-motion-spring-fast),
+              border-radius 0.35s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease;
+}
+
+.m3-step-card:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-radius: var(--md-sys-shape-corner-2xl);
+  transform: translateY(-3px);
+}
+
+.m3-step-badge {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+  border-radius: var(--md-sys-shape-corner-md);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transition: transform 0.4s var(--md-sys-motion-spring-fast),
+              border-radius 0.4s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.m3-step-card:hover .m3-step-badge {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: 50%;
+  transform: scale(1.08);
+}
+
+.m3-step-content {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-step-content strong a {
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+  font-size: 1.04rem;
+  transition: color 0.2s ease;
+}
+
+.m3-step-content strong a:hover {
+  color: var(--md-sys-color-primary);
+  text-decoration: underline;
+}
+
+/* Inline Code Styling */
+code {
+  font-family: var(--md-sys-typescale-mono);
+  font-size: 0.86em;
+  padding: 3px 8px;
+  border-radius: var(--md-sys-shape-corner-xs);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-primary);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   "Разделы" — Pure M3 Expressive Bento Surface Cards
+   ========================================================================== */
+.m3-bento-grid ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.m3-bento-card {
+  padding: 24px 26px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.35s var(--md-sys-motion-spring-default),
+              border-radius 0.35s var(--md-sys-motion-spring-default),
+              background-color 0.2s ease;
+}
+
+.m3-bento-card:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-radius: var(--md-sys-shape-corner-2xl);
+  transform: translateY(-3px);
+}
+
+.m3-bento-card__top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+}
+
+.m3-bento-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--md-sys-shape-corner-md);
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.4s var(--md-sys-motion-spring-fast),
+              border-radius 0.4s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease,
+              color 0.2s ease;
+}
+
+.m3-bento-card:hover .m3-bento-icon {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: 50%;
+  transform: scale(1.08);
+}
+
+.m3-bento-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.m3-bento-card__top strong a {
+  font-size: 1.14rem;
+  font-weight: 800;
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+}
+
+.m3-bento-card__top strong a:hover {
+  color: var(--md-sys-color-primary);
+}
+
+.m3-bento-card__desc {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.m3-bento-card__desc a {
+  color: var(--md-sys-color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================================================
+   "Модели" — M3 Tonal Filter Chips & Surface Table
+   ========================================================================== */
+.m3-models-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.m3-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.m3-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--md-sys-shape-corner-sm);
+  border: none;
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s var(--md-sys-motion-spring-fast);
+}
+
+.m3-filter-chip:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+.m3-filter-chip.is-active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-radius: var(--md-sys-shape-corner-full);
+  padding: 8px 18px;
+}
+
+.m3-model-search {
+  position: relative;
+  min-width: 220px;
+  flex: 1;
+  max-width: 300px;
+}
+
+.m3-model-search__input {
+  width: 100%;
+  height: 40px;
+  padding: 0 16px 0 38px;
+  border-radius: var(--md-sys-shape-corner-full);
+  border: none;
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  font-size: 0.86rem;
+  outline: none;
+  transition: background-color 0.2s ease;
+}
+
+.m3-model-search__input:focus {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.m3-model-search__icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  fill: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+}
+
+.m3-table-container {
+  overflow-x: auto;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.m3-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.m3-table thead th {
+  padding: 16px 22px;
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.m3-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.m3-table tbody tr + tr td {
+  border-top: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+.m3-table tbody tr:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.m3-table td {
+  padding: 16px 22px;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.m3-table td:first-child {
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  width: 44%;
+}
+
+.m3-table td:last-child {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-table a {
+  color: var(--md-sys-color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.m3-table-empty {
+  padding: 28px;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.95rem;
+}
+
+.m3-models-Note {
+  margin: 0;
+  padding: 16px 22px;
+  border-radius: var(--md-sys-shape-corner-lg);
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.95rem;
+}
+
+.m3-models-Note a {
+  color: var(--md-sys-color-primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================================================
+   Contributing Note, Warning Admonition & "Нашли ошибку?" Card
+   ========================================================================== */
+.m3-contribute-inline {
+  margin: 0;
+  padding: 16px 22px;
+  border-radius: var(--md-sys-shape-corner-lg);
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.95rem;
+}
+
+.m3-contribute-inline a {
+  color: var(--md-sys-color-primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.admonition.warning {
+  padding: 22px 26px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-warning-container);
+  color: var(--md-sys-color-on-warning-container);
+}
+
+.admonition.warning .admonition-title {
+  margin: 0 0 8px;
+  font-weight: 800;
+  font-size: 1.02rem;
+  color: var(--md-sys-color-warning);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admonition.warning .admonition-title::before {
+  content: "⚠️";
+  font-size: 1.1rem;
+}
+
+.admonition.warning p:last-child {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+/* Suggest / Edit Card (.yse-suggest) */
+.yse-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 28px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.yse-suggest__text {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.yse-suggest__title {
+  margin: 0 0 6px;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--md-sys-color-on-surface);
+}
+
+.yse-suggest__hint {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.yse-suggest__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.m3-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+  transition: transform 0.3s var(--md-sys-motion-spring-fast),
+              border-radius 0.3s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease;
+}
+
+.m3-btn:hover {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.m3-btn--primary {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.m3-btn--primary:hover {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.yse-suggest__report {
+  padding: 8px 12px;
+  color: var(--md-sys-color-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==========================================================================
+   Secondary Sidebar (Right TOC Rail)
+   ========================================================================== */
+.m3-toc-rail {
+  position: sticky;
+  top: 84px;
+  padding: 18px 14px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+.m3-toc-rail__title {
+  margin: 0 0 12px;
+  padding: 0 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.m3-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m3-toc-link {
+  display: block;
+  padding: 9px 14px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s var(--md-sys-motion-spring-fast);
+}
+
+.m3-toc-link:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-toc-link.is-active {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  font-weight: 800;
+}
+
+/* ==========================================================================
+   Footer & Next Page Banner
+   ========================================================================== */
+.m3-footer {
+  background-color: var(--md-sys-color-surface-container-lowest);
+  padding: 36px 20px 44px;
+}
+
+.m3-footer__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.m3-footer-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 28px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container);
+  text-decoration: none;
+  color: var(--md-sys-color-on-surface);
+  transition: transform 0.35s var(--md-sys-motion-spring-default),
+              border-radius 0.35s var(--md-sys-motion-spring-default),
+              background-color 0.2s ease;
+}
+
+.m3-footer-next:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+  border-radius: var(--md-sys-shape-corner-2xl);
+  transform: translateY(-2px);
+}
+
+.m3-footer-next__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m3-footer-next__dir {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--md-sys-color-primary);
+}
+
+.m3-footer-next__title {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.m3-footer-next__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease;
+}
+
+.m3-footer-next:hover .m3-footer-next__icon {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  transform: translateX(4px);
+}
+
+.m3-footer-next__icon svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.m3-footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.88rem;
+}
+
+.m3-footer-meta a {
+  color: var(--md-sys-color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.m3-footer-meta a:hover {
+  text-decoration: underline;
+}
+
+.m3-social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.m3-social__link {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s var(--md-sys-motion-spring-fast),
+              border-radius 0.3s var(--md-sys-motion-spring-fast),
+              background-color 0.2s ease;
+}
+
+.m3-social__link:hover {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-md);
+}
+
+.m3-social__link svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* ==========================================================================
+   Search Dialog Modal, Selection Bubble, FAB & Toast (No Blur Scrims!)
+   ========================================================================== */
+.m3-search-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 76px 16px 24px;
+  background-color: var(--md-sys-color-scrim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.m3-search-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.m3-search-dialog {
+  width: 100%;
+  max-width: 680px;
+  border-radius: var(--md-sys-shape-corner-xl);
+  background-color: var(--md-sys-color-surface-container-high);
+  overflow: hidden;
+  transform: scale(0.95) translateY(-10px);
+  transition: transform 0.3s var(--md-sys-motion-spring-fast);
+}
+
+.m3-search-modal.is-open .m3-search-dialog {
+  transform: scale(1) translateY(0);
+}
+
+.m3-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.m3-search-bar svg {
+  width: 22px;
+  height: 22px;
+  fill: var(--md-sys-color-primary);
+  flex-shrink: 0;
+}
+
+.m3-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+.m3-search-results {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.m3-search-meta {
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.m3-search-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--md-sys-shape-corner-md);
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.m3-search-item:hover {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.m3-search-item__cat {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Text Selection Bubble (.yse-bubble) */
+.yse-bubble {
+  position: absolute;
+  z-index: 400;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-surface-container-highest);
+  animation: bubblePop 0.25s var(--md-sys-motion-spring-fast);
+}
+
+.yse-bubble[hidden] {
+  display: none;
+}
+
+@keyframes bubblePop {
+  from { opacity: 0; transform: scale(0.9) translateY(4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.yse-bubble a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.yse-bubble a:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.yse-bubble a.yse-bubble__edit {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.yse-bubble svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Scroll-to-Top Extended FAB */
+.m3-fab-top {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 90;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 20px;
+  border-radius: var(--md-sys-shape-corner-md);
+  border: none;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  pointer-events: none;
+  transition: all 0.35s var(--md-sys-motion-spring-fast);
+}
+
+.m3-fab-top.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.m3-fab-top:hover {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+.m3-fab-top svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Toast Notification */
+.m3-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(24px);
+  z-index: 600;
+  padding: 12px 24px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background-color: var(--md-sys-color-on-surface);
+  color: var(--md-sys-color-surface);
+  font-size: 0.88rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s var(--md-sys-motion-spring-fast);
+}
+
+.m3-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Mobile Drawer Scrim (NO blur — pure flat M3 scrim, below drawer z-index 300) */
+.m3-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background-color: var(--md-sys-color-scrim);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.m3-drawer-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Scroll Reveal Motion */
+.m3-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s var(--md-sys-motion-emphasized-decelerate),
+              transform 0.45s var(--md-sys-motion-spring-default);
+}
+
+.m3-reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media screen and (max-width: 1180px) {
+  .m3-layout,
+  body.drawer-collapsed .m3-layout {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+  body.drawer-collapsed .m3-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .m3-toc-rail {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .m3-layout,
+  body.drawer-collapsed .m3-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body.drawer-collapsed .m3-nav-drawer {
+    display: block;
+  }
+  .m3-nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 300;
+    width: 316px;
+    max-width: 86vw;
+    max-height: 100vh;
+    border-radius: 0 28px 28px 0;
+    background-color: var(--md-sys-color-surface-container-low);
+    transform: translateX(-105%);
+    transition: transform 0.35s var(--md-sys-motion-spring-default);
+  }
+  .m3-nav-drawer.is-open {
+    transform: translateX(0);
+  }
+  .m3-nav-drawer__header {
+    display: flex;
+  }
+  .m3-nav-drawer__source {
+    display: flex;
+  }
+  .m3-source-chip {
+    display: none;
+  }
+  .m3-search-trigger {
+    min-width: auto;
+    padding: 0 13px;
+  }
+  .m3-search-trigger__text,
+  .m3-search-trigger__kbd {
+    display: none;
+  }
+  .m3-btn-new-article__label {
+    display: none;
+  }
+  .m3-btn-new-article {
+    padding: 0 13px;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .m3-hero-card {
+    padding: 24px 20px;
+  }
+  .m3-hero-body {
+    flex-direction: column;
+    text-align: center;
+  }
+  .m3-steps-list,
+  .m3-bento-grid ul {
+    grid-template-columns: 1fr;
+  }
+  .tg-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+  .tg-banner__button {
+    width: 100%;
+  }
+  .m3-brand__topic-pill {
+    display: none;
+  }
+}
